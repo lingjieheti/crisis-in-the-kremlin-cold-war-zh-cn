@@ -8,7 +8,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "tools"))
-from steam_game import EXECUTABLE, locate, validate
+from steam_game import EXECUTABLE, installed_build, locate, validate
 
 
 def game_running():
@@ -21,7 +21,7 @@ def game_running():
 
 def main():
     parser = argparse.ArgumentParser(description="《克里姆林宫危机：冷战》简体中文汉化补丁")
-    parser.add_argument("action", nargs="?", default="install", choices=["locate", "install", "verify", "restore"])
+    parser.add_argument("action", nargs="?", default="install", choices=["locate", "build", "install", "verify", "restore"])
     parser.add_argument("--game-dir", type=Path, help="手动指定游戏主目录；默认自动识别 Steam 库")
     args = parser.parse_args()
     if os.name != "nt" or sys.maxsize <= 2**32:
@@ -30,12 +30,17 @@ def main():
     if args.action == "locate":
         print(game, flush=True)
         return 0
+    if args.action == "build":
+        print(installed_build(game) or "unknown", flush=True)
+        return 0
     if args.action != "verify" and game_running():
         parser.exit(1, "请先保存进度并退出游戏，再重试。\n")
     backend = ROOT / "games/coldwar/patch.py"
-    action = "check" if args.action == "verify" and "coldwar" == "collapse" else args.action
+    action = args.action
     command = [sys.executable, "-B", "-u", "-X", "utf8"]
-    if action == "install":
+    sys.path.insert(0, str(backend.parent))
+    import patch as coldwar_patch
+    if action == "install" and not coldwar_patch.has_local_base():
         result = subprocess.run([*command, str(ROOT / "tools/workshop.py"), "coldwar", "--game-dir", str(game)])
         if result.returncode:
             return result.returncode

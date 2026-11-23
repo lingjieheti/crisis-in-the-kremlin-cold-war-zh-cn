@@ -79,7 +79,7 @@ def build(dest, cache):
             shutil.copytree(ROOT / "fonts", payload / "fonts")
         shutil.copytree(ROOT / "games" / GAME, payload / "games" / GAME,
                         ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "AUDIT.md", "audit*.py",
-                                                      "rank_text.py", "build_font_delta.py", "test_backend.py"))
+                                                      "rank_text.py", "build_font_delta.py", "test_*.py", "COMMUNITY-*.md"))
         subprocess.run([str(runtime / "python.exe"), "-B", "-X", "utf8", str(payload / "manage.py"), "--help"],
                        cwd=payload, check=True)
         if GAME == "mao":

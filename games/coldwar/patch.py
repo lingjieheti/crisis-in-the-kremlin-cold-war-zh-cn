@@ -28,7 +28,9 @@ GAME = "1922740"
 BUILD = "26243566"
 XML_HASH = "d4aa3fa9c02d761a11e70dabb7dcd5dd643af5d772ea1b4307403935cce17061"
 V1_XML = "ea80a26f85d54e6f1c7ca3e83ba607a41502d7f903e5cb7047e22048e5aa8314"
-RELEASE_XML = "1936bf8b50353cbf81bd7b64616bc372e259465bbbc9fcc73e02d2719ede31aa"
+V1_2_XML = "1936bf8b50353cbf81bd7b64616bc372e259465bbbc9fcc73e02d2719ede31aa"
+RELEASE_XML = "9b52edb3378c45b98beab0cfdc2ec45cc43d59bf332bd3cceb10d30fcc4bf2a1"
+GENERATIONS = (V1_XML, V1_2_XML, RELEASE_XML)
 REGKEY = r"Software\Nostalgames\CrisisInTheKremlin2"
 PREF = "modsPrefsList_h752420768"
 OWN_FILES = {"text.xml", "info.json", "icon.png"}
@@ -54,11 +56,7 @@ def game_running():
 def discover(game=None):
     return game_paths.workshop(game, XML_HASH)
 
-def render(base):
-    info = read_json(base / "info.json")
-    ensure(info.get("id") == ORIGINAL_ID and info.get("modType") == "Translation", "所选目录不是支持的社区中文翻译。")
-    xml = (base / "text.xml").read_bytes()
-    ensure(sha(xml) == XML_HASH, "社区中文基包版本不同，已停止，以免覆盖新译文。")
+def render_text(xml):
     root = ET.fromstring(xml)
     patch = read_json(HERE / "patch.json")
     links = read_json(HERE / "wiki_zh.json")
@@ -77,11 +75,19 @@ def render(base):
     checked = ET.fromstring(result)
     ensure(sum(1 for node in checked.iter() if not len(node)) == 18133, "文本项数校验失败。")
     ensure(all(checked.findtext("." + k) == v for k, v in patch.items()), "中文回读校验失败。")
+    ensure(sha(result) == RELEASE_XML, "生成的中文指纹与本版本不符。")
+    return result
+
+def render(base):
+    info = read_json(base / "info.json")
+    ensure(info.get("id") == ORIGINAL_ID and info.get("modType") == "Translation", "所选目录不是支持的社区中文翻译。")
+    xml = (base / "text.xml").read_bytes()
+    ensure(sha(xml) == XML_HASH, "社区中文基包版本不同，已停止，以免覆盖新译文。")
     info["id"] = MOD
     info.pop("steamPublishedFileId", None)
     info["displayedName"] = "社区中文翻译 · 本地校订"
     info["description"] = "使用本机 Steam 社区中文翻译生成。" + info["description"]
-    return {"text.xml": result, "info.json": json_bytes(info), "icon.png": (base / "icon.png").read_bytes()}
+    return {"text.xml": render_text(xml), "info.json": json_bytes(info), "icon.png": (base / "icon.png").read_bytes()}
 
 def read_pref():
     import winreg
@@ -139,14 +145,29 @@ def verify_generation(folder, hashes):
     # leave the fully written new XML next to the old installation record.
     expected = hashes.copy()
     text = folder / "text.xml"
-    if hashes.get("text.xml") == V1_XML and text.is_file() and not reparse(text):
-        if sha(text.read_bytes()) == RELEASE_XML:
-            expected["text.xml"] = RELEASE_XML
+    recorded = hashes.get("text.xml")
+    if recorded in GENERATIONS and text.is_file() and not reparse(text):
+        actual = sha(text.read_bytes())
+        if actual in GENERATIONS[GENERATIONS.index(recorded):]:
+            expected["text.xml"] = actual
     verify_files(folder, expected)
+
+def has_local_base(data_dir=None):
+    """A settled installation can supply the base. The backend verifies it under its lock."""
+    root = game_paths.user_data(data_dir)
+    manifest = root / ".zhcn-coldwar-install.json"
+    if not manifest.exists():
+        return False
+    ensure(manifest.is_file() and not reparse(manifest), "安装记录已被重定向。")
+    state = read_json(manifest)
+    return (state.get("format") == 1 and not state.get("pending_activation")
+            and state.get("files", {}).get("text.xml") in GENERATIONS
+            and (root / "mods" / MOD).is_dir())
 
 def upgrade(folder, state_file, state, payload, hashes):
     old = state["files"]
-    ensure(old == {**hashes, "text.xml": V1_XML} and hashes["text.xml"] == RELEASE_XML,
+    ensure(old.get("text.xml") in GENERATIONS[:-1] and old == {**hashes, "text.xml": old["text.xml"]}
+           and hashes["text.xml"] == RELEASE_XML,
            "当前安装记录与支持的旧版不符，请先核对原先的基包和个人改动。")
     verify_generation(folder, old)
     target = folder / "text.xml"
@@ -247,21 +268,32 @@ def run(args):
             _, active = read_pref()
             ensure(any(x["id"] == MOD and x["isLoaded"] for x in active), "本地校订模组未启用。")
             return
-        base = args.base or discover(args.game_dir)
-        payload = render(base)
-        hashes = {name: sha(data) for name, data in payload.items()}
-        ensure(hashes["text.xml"] == RELEASE_XML, "生成的中文指纹与本版本不符。")
         mods = folder.parent
         mods.mkdir(exist_ok=True)
         ensure(not reparse(mods), "模组目录是重定向路径，请手动安装。")
-        current, rows = read_pref()
-        if state_file.exists():
-            state = read_json(state_file)
+        state = read_json(state_file) if state_file.exists() else None
+        if state is not None:
             ensure(state.get("format") == 1, "不能识别安装记录。")
+        base = args.base
+        if base is None and has_local_base(root):
+            verify_generation(folder, state["files"])
+            payload = {name: (folder / name).read_bytes() for name in OWN_FILES}
+            payload["text.xml"] = render_text(payload["text.xml"])
+        else:
+            base = base or discover(args.game_dir)
+            payload = render(base)
+        hashes = {name: sha(data) for name, data in payload.items()}
+        current, rows = read_pref()
+        if state is not None:
             if state["files"] != hashes:
-                upgrade(folder, state_file, state, payload, hashes)
-                font_patch.manage(asset, root, "install")
-                return
+                if state.get("pending_activation") and not folder.exists():
+                    old = state["files"]
+                    ensure(old.get("text.xml") in GENERATIONS[:-1]
+                           and old == {**hashes, "text.xml": old["text.xml"]}, "首次安装记录与基包不符。")
+                    state["files"] = hashes
+                    font_patch.replace_atomic(state_file, json_bytes(state))
+                else:
+                    upgrade(folder, state_file, state, payload, hashes)
             if folder.exists():
                 verify_files(folder, hashes)
 

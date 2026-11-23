@@ -29,11 +29,11 @@ class SteamGameTests(unittest.TestCase):
             file.write_bytes(b"fixture")
         return game
 
-    def manifest(self, library, folder):
+    def manifest(self, library, folder, build="123456"):
         apps = library / "steamapps"
         apps.mkdir(parents=True, exist_ok=True)
         path = apps / f"appmanifest_{steam_game.APP_ID}.acf"
-        path.write_text(f'"AppState"\n{{\n"appid" "{steam_game.APP_ID}"\n"installdir" "{folder}"\n}}\n',
+        path.write_text(f'"AppState"\n{{\n"appid" "{steam_game.APP_ID}"\n"installdir" "{folder}"\n"buildid" "{build}"\n}}\n',
                         encoding="utf-8-sig")
 
     def test_modern_library_and_custom_install_dir(self):
@@ -61,6 +61,18 @@ class SteamGameTests(unittest.TestCase):
         custom = self.make_game(self.apps / "common/另一安装目录")
         self.manifest(self.client, custom.name)
         self.assertEqual(steam_game.locate([self.client]), custom)
+
+    def test_move_to_another_library_precedes_unregistered_copy(self):
+        old = self.make_game(self.apps / "common" / steam_game.GAME_FOLDER)
+        active = self.make_game(self.library / "steamapps/common/当前版本")
+        self.manifest(self.library, active.name, build="314159")
+        self.assertEqual(steam_game.locate([self.client, self.library]), active)
+        self.assertEqual(steam_game.installed_build(active), "314159")
+        self.assertIsNone(steam_game.installed_build(old))
+        self.manifest(self.library, "不同目录")
+        self.assertIsNone(steam_game.installed_build(active))
+        self.manifest(self.library, active.name, build="unknown")
+        self.assertIsNone(steam_game.installed_build(active))
 
     def test_invalid_manifest_cannot_select_other_directories(self):
         common = self.apps / "common"

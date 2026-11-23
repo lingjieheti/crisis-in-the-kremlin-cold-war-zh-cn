@@ -23,7 +23,8 @@ jobs:
           architecture: x64
       - name: Check release files and player commands without Steam
         run: python -B -X utf8 tools/check_release.py
-
+      - name: Test game patch regressions
+        run: python -B -X utf8 games/coldwar/test_backend.py
 
   installer-smoke:
     name: Windows installer smoke
@@ -40,7 +41,4 @@ jobs:
       - name: Build the single-file installer
         run: python -B -X utf8 tools/build_setup.py
       - name: Run the packaged executable without Steam or external Python
-        shell: pwsh
-        run: |
-          $env:PYTHONUTF8 = '1'
-          python -c "from pathlib import Path; import subprocess; exe=next(Path('dist').glob('*.exe')); r=subprocess.run([str(exe.resolve()),'--locate',str(Path.cwd())],capture_output=True,encoding='utf-8',errors='replace'); assert r.returncode == 1 and 'Steam' in r.stderr and 'Traceback' not in r.stderr, (r.returncode,r.stdout,r.stderr)"
+        run: python -B -X utf8 tools/check_setup.py
