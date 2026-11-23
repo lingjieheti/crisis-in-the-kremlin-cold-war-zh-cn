@@ -75,18 +75,10 @@ def build_assets(original, delta):
     return bytes(result)
 
 def asset_location(game, base=None):
-    if game is not None:
-        return Path(game) / FILE
-    import winreg, re
-    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Valve\Steam") as key:
-        steam = Path(winreg.QueryValueEx(key, "SteamPath")[0])
-    libraries = [steam]
-    libraries.extend(Path(p.replace("\\\\","\\")) for p in re.findall(r'"path"\s+"([^"]+)"', (steam/"steamapps/libraryfolders.vdf").read_text("utf-8-sig")))
-    for lib in dict.fromkeys(libraries):
-        p = lib/"steamapps/common/Crisis in the Kremlin Cold War"/FILE
-        if p.is_file():
-            return p
-    raise ValueError("找不到游戏目录，请用 --game-dir 指定。")
+    if game is None:
+        import game_paths
+        game = game_paths.game_dir(FILE)
+    return Path(game)/FILE
 
 def replace_atomic(path, payload, staging_dir=None):
     fd, temp = tempfile.mkstemp(dir=staging_dir or path.parent, prefix=".zhcn-")

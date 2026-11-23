@@ -1,10 +1,6 @@
 """Build a local-only Chinese translation from the player's Workshop copy."""
 import argparse
-import sys
-sys.dont_write_bytecode = True
 import base64
-import font_patch
-
 from contextlib import contextmanager
 import hashlib
 import json
@@ -14,8 +10,16 @@ import re
 
 import stat
 import subprocess
+import sys
 import tempfile
 import xml.etree.ElementTree as ET
+
+HERE = Path(__file__).resolve().parent
+sys.dont_write_bytecode = True
+# Windows' embedded runtime can omit the executed script's folder from sys.path.
+sys.path.insert(0, str(HERE))
+import font_patch
+import game_paths
 
 MOD = "zhcn-coldwar-local"
 ORIGINAL_ID = "114514"
@@ -27,7 +31,6 @@ V1_XML = "ea80a26f85d54e6f1c7ca3e83ba607a41502d7f903e5cb7047e22048e5aa8314"
 RELEASE_XML = "1936bf8b50353cbf81bd7b64616bc372e259465bbbc9fcc73e02d2719ede31aa"
 REGKEY = r"Software\Nostalgames\CrisisInTheKremlin2"
 PREF = "modsPrefsList_h752420768"
-HERE = Path(__file__).resolve().parent
 OWN_FILES = {"text.xml", "info.json", "icon.png"}
 
 def sha(data):
@@ -44,21 +47,12 @@ def ensure(ok, message):
         raise ValueError(message)
 
 def game_running():
-    listing = subprocess.check_output(["tasklist", "/fi", "imagename eq CrisisInTheKremlin2.exe", "/fo", "csv", "/nh"], creationflags=subprocess.CREATE_NO_WINDOW)
+    executable = Path(os.environ["SystemRoot"]) / "System32/tasklist.exe"
+    listing = subprocess.check_output([str(executable), "/fi", "imagename eq CrisisInTheKremlin2.exe", "/fo", "csv", "/nh"], creationflags=subprocess.CREATE_NO_WINDOW)
     return b"crisisinthekremlin2.exe" in listing.lower()
 
-def discover():
-    import winreg
-    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Valve\Steam") as key:
-        steam = Path(winreg.QueryValueEx(key, "SteamPath")[0])
-    libraries = [steam]
-    content = (steam / "steamapps/libraryfolders.vdf").read_text("utf-8-sig")
-    libraries.extend(Path(p.replace("\\\\", "\\")) for p in re.findall(r'"path"\s+"([^"]+)"', content))
-    for lib in dict.fromkeys(libraries):
-        base = lib / "steamapps/workshop/content" / GAME / ITEM
-        if (base / "text.xml").is_file():
-            return base
-    raise ValueError("请先在 Steam 创意工坊下载物品 3523398274，或用 --base 指定该模组所在目录。")
+def discover(game=None):
+    return game_paths.workshop(game, XML_HASH)
 
 def render(base):
     info = read_json(base / "info.json")
@@ -210,17 +204,20 @@ def write_new(path, data):
 def run(args):
     if args.action == "build":
         ensure(args.output is not None and not args.output.exists(), "请用 --output 指定一个尚不存在的输出目录。")
-        payload = render(args.base or discover())
+        payload = render(args.base or discover(args.game_dir))
         args.output.mkdir(parents=True)
         for name, data in payload.items():
             write_new(args.output / name, data)
         return
     ensure(os.name == "nt", "安装和回退仅支持 Windows。")
-    root = Path(os.environ["USERPROFILE"]) / "AppData/LocalLow/Nostalgames/CrisisInTheKremlin2"
+    root = game_paths.user_data(getattr(args, "data_dir", None))
     folder = root / "mods" / MOD
     state_file = root / ".zhcn-coldwar-install.json"
+    if args.action in ("verify", "restore"):
+        ensure(state_file.is_file(), "本补丁尚未安装。")
     with locked(root):
-        ensure(not game_running(), "请先退出游戏。")
+        if args.action != "verify":
+            ensure(not game_running(), "请先退出游戏。")
         if state_file.exists():
             ensure(state_file.is_file() and not reparse(state_file), "安装记录已被重定向。")
         asset = font_patch.asset_location(args.game_dir)
@@ -250,7 +247,7 @@ def run(args):
             _, active = read_pref()
             ensure(any(x["id"] == MOD and x["isLoaded"] for x in active), "本地校订模组未启用。")
             return
-        base = args.base or discover()
+        base = args.base or discover(args.game_dir)
         payload = render(base)
         hashes = {name: sha(data) for name, data in payload.items()}
         ensure(hashes["text.xml"] == RELEASE_XML, "生成的中文指纹与本版本不符。")
@@ -274,7 +271,7 @@ def run(args):
             find_conflicting(base, mods, rows)
             changed = encoded(activate(rows))
             state = {"format": 1, "files": hashes, "previous": b64(current), "applied": b64(changed), "pending_activation": True}
-            write_new(state_file, json_bytes(state))
+            font_patch.replace_atomic(state_file, json_bytes(state))
         if not folder.exists():
             with tempfile.TemporaryDirectory(dir=mods) as staging:
                 staged = Path(staging) / MOD
@@ -283,6 +280,8 @@ def run(args):
                     write_new(staged / name, data)
                 verify_files(staged, hashes)
                 os.rename(staged, folder)
+        verify_files(folder, hashes)
+        font_patch.manage(asset, root, "install")
         if state.get("pending_activation"):
             find_conflicting(base, mods, rows)
             desired = activate(rows)
@@ -290,13 +289,12 @@ def run(args):
                 write_pref(encoded(desired))
             del state["pending_activation"]
             font_patch.replace_atomic(state_file, json_bytes(state))
-        verify_files(folder, hashes)
-        font_patch.manage(asset, root, "install")
 
 if __name__ == "__main__":
     argp = argparse.ArgumentParser(description=__doc__)
     argp.add_argument("action", choices=["build", "install", "restore", "verify"])
     argp.add_argument("--game-dir", type=Path, help="Steam game directory (auto-detected by default)")
+    argp.add_argument("--data-dir", type=Path, help="Unity player data folder (defaults to current user LocalLow)")
     argp.add_argument("--base", type=Path, help="Steam Workshop item 3523398274 folder")
     argp.add_argument("--output", type=Path, help="new output directory for build")
     try:

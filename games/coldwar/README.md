@@ -1,20 +1,21 @@
 # 《克里姆林宫危机：冷战》简体中文校订
 
-适用于 Steam Windows 版《Crisis in the Kremlin: The Cold War》1.2.5.6，构建号 26243566。本补丁从玩家的“社区中文翻译”生成本地模组，包含 769 项中文校订和 437 个中文百科链接。安装器只需 Python 3.10 或更高版本。安装后的游戏不需要 Python 常驻。
+适用于 Steam Windows 版《Crisis in the Kremlin: The Cold War》1.2.5.6，构建号 26243566。本补丁从玩家的“社区中文翻译”生成本地模组，包含 769 项中文校订和 437 个中文百科链接。
 
 ## 安装与还原
 
-1. 在 Steam 安装游戏，下载工坊模组“社区中文翻译”。等待 Steam 下载完成后，退出游戏。[社区中文翻译 · 创意工坊物品 3523398274](https://steamcommunity.com/sharedfiles/filedetails/?id=3523398274)
-2. 在本目录运行下方命令。安装会启用“社区中文翻译 · 本地校订”，并记录原先的基包启用状态。
+在 Steam 中安装游戏并登录拥有游戏的账号，退出游戏后打开本项目的 Windows 安装器，选择“安装或更新”。安装器自带运行环境，会定位游戏并准备工坊基包。首次安装会启用“社区中文翻译 · 本地校订”，并记录基包原有的启用状态。后续可以在同一安装器中核验或还原。[社区中文翻译 · 工坊物品 3523398274](https://steamcommunity.com/sharedfiles/filedetails/?id=3523398274)
+
+如需直接运行源码，先下载工坊基包，然后进入本目录并执行以下命令。
 
 ```powershell
 py -3 patch.py install
 py -3 patch.py verify
 ```
 
-需要指定目录时，可向 `install` 添加 `--base "工坊模组的实际目录"` 和 `--game-dir "游戏的实际目录"`。如电脑使用 `python` 命令，可以用它代替 `py -3`。
+游戏和工坊位于不同的 Steam 库也可自动查找。需要手动指定时，可向 `install` 添加 `--base "工坊模组的实际目录"` 和 `--game-dir "游戏的实际目录"`。首次运行游戏前也可安装。用户模组、安装记录和字体备份写入当前 Windows 用户的 Unity 游戏数据目录。
 
-已安装三款合集 v1.0.0 的玩家也可直接运行同一条 `install` 命令。升级核对原有三个模组文件，更新中文文本，保留最初的字体备份和游戏里当前的各项模组开关。如果此前主动停用了本地校订，升级后仍可在游戏内自行启用。`verify` 会告诉你模组是否已启用。升级过程中若被中断，退出游戏后重新运行 `install` 可以继续，运行 `restore` 可以回退。
+已安装 v1.0.0 或 v1.1.0 的玩家可以直接选择“安装或更新”。程序核对原有三个模组文件，保留最初的字体备份和当前各项模组开关。如果此前主动停用了本地校订，升级后仍可在游戏内自行启用。`verify` 会告诉你模组是否已启用。升级中断时，退出游戏后重新运行 `install` 可以继续，运行 `restore` 可以回退。
 
 退出游戏后运行以下命令还原。程序会还原汉化字体文件和先前的基包启用状态，其他模组的后续开关调整会保留。
 
@@ -22,7 +23,7 @@ py -3 patch.py verify
 py -3 patch.py restore
 ```
 
-原字体资源备份在 `%USERPROFILE%\AppData\LocalLow\Nostalgames\CrisisInTheKremlin2\.zhcn-original-sharedassets0.assets`。安装记录保存在同目录的 `.zhcn-coldwar-install.json`。游戏或社区基包更新后，旧补丁会检查资源指纹。在重新适配前，保留原始备份。
+默认备份在 `%USERPROFILE%\AppData\LocalLow\Nostalgames\CrisisInTheKremlin2\.zhcn-original-sharedassets0.assets`，安装记录为同目录的 `.zhcn-coldwar-install.json`。重定向 LocalLow 的用户账户使用 Windows 报告的实际路径。直接运行后端时也可用 `--data-dir` 指定 Unity 游戏数据目录。游戏或社区基包更新后，补丁会先核对资源指纹。
 
 ## 内容与校验
 
@@ -41,7 +42,9 @@ py -3 patch.py restore
 
 `patch.json` 保存本次原创译文。`font.bsdiff` 保存开源字体的差分。字体采用 SIL Open Font License 1.1，新生成的字体内部名称为 Kremlin UI SC Regular。许可与署名见 [FONT-LICENSE.txt](FONT-LICENSE.txt)。[Go Noto Universal](https://github.com/satbyy/go-noto-universal/tree/0f4be64) · [Noto Sans CJK](https://github.com/notofonts/noto-cjk)
 
-维护者可使用 `build_font_delta.py` 从原始 Go Noto Kurrent 字体、原捐赠字体 `fonts/UI-Regular.ttf` 和原字形清单所用的 v1.0.0 中文 `text.xml` 重建沿用的字体差分。该构建步骤使用 fonttools 和 bsdiff4。日常安装、校验与还原全部使用 Python 标准库。[首版合集源码与字体](https://github.com/lingjieheti/nostalgames-zh-cn/tree/v1.0.0)
+字体重建材料随本项目提供。维护脚本从玩家已有游戏资源中读取基础字体，并按项目内捐赠字体的 3,110 个码位重建差分。可在本目录运行下列命令，输出路径应是尚不存在的新文件。安装器直接使用已校验的差分。[捐赠字形和许可说明](font-source/README.md)
 
-
-重建字体差分时使用的基准字重已固定至合集 v1.0.0。[下载常规字体](https://github.com/lingjieheti/nostalgames-zh-cn/raw/c4aa567c284c7795d0df1db091fff53599b3f53b/fonts/UI-Regular.ttf)
+```powershell
+py -3.12 -m pip install fonttools==4.62.1 bsdiff4==1.4.4
+py -3.12 build_font_delta.py --game-dir "游戏的实际目录" --output "重建字体.bsdiff"
+```

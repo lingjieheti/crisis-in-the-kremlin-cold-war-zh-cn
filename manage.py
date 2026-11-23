@@ -1,4 +1,4 @@
-"""Install, verify, or restore the Simplified Chinese patch for 克里姆林宫危机：冷战."""
+"""Player entry point for the standalone Simplified Chinese patch."""
 import argparse
 import csv
 import os
@@ -7,41 +7,40 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent
-ACTIONS = {"install": "安装或更新", "verify": "核验安装", "restore": "还原"}
+sys.path.insert(0, str(ROOT / "tools"))
+from steam_game import EXECUTABLE, locate, validate
 
-def choose(prompt, choices):
-    print(prompt)
-    for index, (_, label) in enumerate(choices, 1):
-        print(f"  {index}. {label}")
-    print("  0. 退出")
-    while True:
-        answer = input("请选择编号：").strip()
-        if answer == "0":
-            raise SystemExit(0)
-        if answer.isascii() and answer.isdecimal() and 1 <= int(answer) <= len(choices):
-            return choices[int(answer) - 1][0]
-        print("请输入上面列出的编号。")
 
-def game_running(exe):
+def game_running():
     tasklist = Path(os.environ["SystemRoot"]) / "System32/tasklist.exe"
     output = subprocess.check_output([str(tasklist), "/FO", "CSV", "/NH", "/FI",
-                                      f"IMAGENAME eq {exe}"], encoding="mbcs", errors="replace")
-    return any(row and row[0].casefold() == exe.casefold() for row in csv.reader(output.splitlines()))
+                                      "IMAGENAME eq " + EXECUTABLE], encoding="mbcs", errors="replace")
+    return any(row and row[0].casefold() == EXECUTABLE.casefold()
+               for row in csv.reader(output.splitlines()))
+
 
 def main():
-    parser = argparse.ArgumentParser(description="《克里姆林宫危机：冷战》简体中文补丁")
-    parser.add_argument("action", choices=ACTIONS, nargs="?")
+    parser = argparse.ArgumentParser(description="《克里姆林宫危机：冷战》简体中文汉化补丁")
+    parser.add_argument("action", nargs="?", default="install", choices=["locate", "install", "verify", "restore"])
+    parser.add_argument("--game-dir", type=Path, help="手动指定游戏主目录；默认自动识别 Steam 库")
     args = parser.parse_args()
-    if os.name != "nt" or sys.version_info < (3, 11) or sys.maxsize <= 2**32:
-        parser.exit(1, "请使用 Windows 和 64 位 Python 3.11 或更高版本。\n")
-    action = args.action or choose("《克里姆林宫危机：冷战》简体中文补丁", list(ACTIONS.items()))
-    if action != "verify" and game_running("CrisisInTheKremlin2.exe"):
-        parser.exit(1, "请先退出游戏，再执行此操作。\n")
+    if os.name != "nt" or sys.maxsize <= 2**32:
+        parser.exit(1, "请使用 64 位 Windows。\n")
+    game = validate(args.game_dir) if args.game_dir is not None else locate()
+    if args.action == "locate":
+        print(game, flush=True)
+        return 0
+    if args.action != "verify" and game_running():
+        parser.exit(1, "请先保存进度并退出游戏，再重试。\n")
+    backend = ROOT / "games/coldwar/patch.py"
+    action = "check" if args.action == "verify" and "coldwar" == "collapse" else args.action
+    command = [sys.executable, "-B", "-u", "-X", "utf8"]
     if action == "install":
-        fetched = subprocess.run([sys.executable, "-B", str(ROOT / "tools/workshop.py"), "coldwar"])
-        if fetched.returncode:
-            return fetched.returncode
-    return subprocess.run([sys.executable, "-B", str(ROOT / "games/coldwar/patch.py"), action]).returncode
+        result = subprocess.run([*command, str(ROOT / "tools/workshop.py"), "coldwar", "--game-dir", str(game)])
+        if result.returncode:
+            return result.returncode
+    return subprocess.run([*command, str(backend), action, "--game-dir", str(game)]).returncode
+
 
 if __name__ == "__main__":
     try:

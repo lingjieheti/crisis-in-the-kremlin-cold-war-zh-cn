@@ -1,27 +1,22 @@
-# 《克里姆林宫危机：冷战》简体中文补丁
+# 《克里姆林宫危机：冷战》简体中文汉化补丁
 
-适用于 Windows 版 Steam 构建 **26243566**。本项目独立提供这款游戏的中文文本校订、字体补丁和安装器。[下载 Windows 版](https://github.com/lingjieheti/crisis-in-the-kremlin-cold-war-zh-cn/releases/latest) · [本次文本校对报告](games/coldwar/AUDIT.md)
+**[下载 Windows 安装程序（.exe）](https://github.com/lingjieheti/crisis-in-the-kremlin-cold-war-zh-cn/releases/latest/download/crisis-in-the-kremlin-cold-war-zh-cn-Setup.exe)**
 
-本次修正了错位的阿尔及利亚内战结局、进口上限和议会席位说明。遇到英俄原文相互矛盾的决议提示，按当前 Steam 构建的实际计算逻辑核对。
+退出游戏，双击安装程序。它会自动找到 Steam 游戏目录，点击 **安装汉化** 即可。从 Steam 启动游戏即可使用中文。
 
-## 安装与更新
+首次安装如缺少社区翻译底包，请保持 Steam 已登录，安装器会请求 Steam 下载。也可手动选择目录。需要恢复原版时，再次打开安装程序，点击 **还原原版**。
 
-1. 在 Steam 安装游戏，登录拥有该游戏的账号，然后退出游戏。
-2. 安装 Windows **64 位 Python 3.12**，下载 Release 中以 `-Windows.zip` 结尾的文件并完整解压。[Python 官方下载](https://www.python.org/downloads/windows/)
-3. 双击 **汉化管理.cmd**，选择 **安装或更新**。完成后从 Steam 启动游戏。再次打开管理器，可以核验已安装的文件或还原。
+适配 Steam Windows x64 构建 **26243566**。[校对记录](games/coldwar/AUDIT.md) · [补丁来源与技术说明](games/coldwar/README.md) · [游戏内截图](docs/images/coldwar-changelog.webp)
 
-安装器通过 Steam 获取社区中文底包，并启用本地校订版。同一时间请只启用一款翻译模组。
+<details>
+<summary>从源码构建安装程序</summary>
 
-高级用法、备份位置、上游译者署名与字体授权见[安装与来源说明](games/coldwar/README.md)。也可在解压目录打开终端运行：
+在 Windows x64 和 Python 3.12 环境中运行：
 
 ```powershell
-py -3.12 manage.py install
-py -3.12 manage.py verify
-py -3.12 manage.py restore
+py -3.12 tools/build_setup.py
 ```
 
-## 实机画面
+生成的独立 EXE 与 SHA-256 校验文件保存在 `dist` 目录。构建器从 Python.org 获取固定哈希的 Windows 嵌入式运行时。玩家直接使用上方的安装程序。
 
-下图记录 Windows 实机检查的更新日志。文本校对的范围、此次修订及仍待验证的内容见[校对报告](games/coldwar/AUDIT.md)。
-
-![克里姆林宫危机：冷战实机截图](docs/coldwar-changelog.webp)
+</details>

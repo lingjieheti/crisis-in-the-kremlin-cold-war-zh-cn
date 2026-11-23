@@ -9,6 +9,7 @@ from urllib.parse import quote, unquote, urlencode, urlsplit
 from urllib.request import Request, urlopen
 
 sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import audit
 import patch
 

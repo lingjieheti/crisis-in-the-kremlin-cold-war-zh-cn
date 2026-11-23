@@ -11,6 +11,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import font_patch
 import patch
 

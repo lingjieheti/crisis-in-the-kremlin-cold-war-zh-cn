@@ -4,7 +4,6 @@ import ctypes as c
 import hashlib
 import os
 from pathlib import Path
-import re
 import sys
 import time
 
@@ -13,13 +12,11 @@ ITEMS = {
                 "e082bf5c9f881c822b1540a76b74f9d15e18019a73ebd206a559595badcb7f65", "text.xml"),
 }
 
-def libraries():
-    import winreg
-    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Valve\Steam") as key:
-        base = Path(winreg.QueryValueEx(key, "SteamPath")[0])
-    config = (base / "steamapps/libraryfolders.vdf").read_text("utf-8-sig")
-    paths = re.findall(r'"path"\s+"([^"]+)"', config)
-    return list(dict.fromkeys([base, *(Path(p.replace("\\\\", "\\")) for p in paths)]))
+GAME_FILES = Path(__file__).resolve().parents[1] / "games/coldwar"
+sys.path.insert(0, str(GAME_FILES))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from game_paths import workshop
+from steam_game import locate, validate
 
 class Callback(c.Structure):
     _fields_ = [("user", c.c_int32), ("kind", c.c_int32), ("data", c.c_void_p), ("size", c.c_int32)]
@@ -73,27 +70,27 @@ def fetch(game, app, item, dll, expected):
     finally:
         bind("SteamAPI_Shutdown", None)()
 
-def obtain(key):
-    app, item, game_dir, data_dir, sha, required = ITEMS[key]
-    roots = libraries()
-    target = next((base / "steamapps" for base in roots
-                   if (base / "steamapps/common" / game_dir / data_dir).is_dir()), None)
-    if target is None:
-        raise ValueError("未找到已安装的游戏，请先在 Steam 安装。")
-    base = target / "workshop/content" / str(app) / str(item)
-    if (base / required).is_file():
+def obtain(key, game_dir=None):
+    app, item, _, data_dir, sha, _ = ITEMS[key]
+    game = validate(game_dir) if game_dir else locate()
+    # Use the same fingerprint as the patch backend before deciding to download.
+    from patch import XML_HASH
+    try:
+        workshop(game, XML_HASH)
         return
-    game = target / "common" / game_dir
-    print(f"正在从 Steam 创意工坊下载基包 {item}……", flush=True)
+    except ValueError:
+        pass
+    print("正在通过 Steam 下载社区翻译底包…", flush=True)
     fetch(game, app, item, game / data_dir / "Plugins/x86_64/steam_api64.dll", sha)
-    if not (base / required).is_file():
-        raise ValueError("Steam 已返回，但基包尚未出现在游戏库目录中。")
+    workshop(game, XML_HASH)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("game", choices=ITEMS)
-    key = parser.parse_args().game
+    parser.add_argument("--game-dir", type=Path)
+    args = parser.parse_args()
     try:
-        obtain(key)
+        obtain(args.game, args.game_dir)
     except (OSError, ValueError, AttributeError) as error:
-        sys.exit(f"{error}\n也可在 Steam 订阅基包后重试：\nhttps://steamcommunity.com/sharedfiles/filedetails/?id={ITEMS[key][1]}")
+        sys.exit(f"{error}\n也可在 Steam 订阅社区翻译后重试：\nhttps://steamcommunity.com/sharedfiles/filedetails/?id={ITEMS[args.game][1]}")

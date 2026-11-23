@@ -2,20 +2,29 @@
 import argparse
 from io import BytesIO
 from pathlib import Path
+import sys
 import xml.etree.ElementTree as ET
-import bsdiff4
-from fontTools.ttLib import TTFont
-from fontTools.pens.recordingPen import DecomposingRecordingPen
-from fontTools.pens.ttGlyphPen import TTGlyphPen
+sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import font_patch
 
-def build(base_font, donor_font, xml):
+DONOR = Path(__file__).resolve().parent / 'font-source/KremlinDonorSC-Regular.ttf'
+DONOR_SHA = '5e0db897530eb471208c18ab3af96fe964a6c8887ebded8af95c10850b5d2b6f'
+
+def build(base_font, donor_font, xml=None):
+    from fontTools.ttLib import TTFont
+    from fontTools.pens.recordingPen import DecomposingRecordingPen
+    from fontTools.pens.ttGlyphPen import TTGlyphPen
     base = TTFont(base_font, recalcTimestamp=False)
     donor = TTFont(donor_font, recalcTimestamp=False)
     assert base['head'].unitsPerEm == donor['head'].unitsPerEm == 1000
     original_map = base.getBestCmap().copy()
     donor_map = donor.getBestCmap()
-    root = ET.fromstring(xml.read_bytes())
-    targets = sorted({ord(c) for node in root.iter() if not len(node) for c in (node.text or '') if '\u3400' <= c <= '\u9fff' or '\u3000' <= c <= '\u303f' or '\uff01' <= c <= '\uff60' or (c.isprintable() and ord(c) not in original_map)})
+    if xml is None:
+        targets = sorted(donor_map)
+    else:
+        root = ET.fromstring(xml.read_bytes())
+        targets = sorted({ord(c) for node in root.iter() if not len(node) for c in (node.text or '') if '\u3400' <= c <= '\u9fff' or '\u3000' <= c <= '\u303f' or '\uff01' <= c <= '\uff60' or (c.isprintable() and ord(c) not in original_map)})
     missing = [cp for cp in targets if cp not in donor_map]
     assert not missing, missing
     glyphs = donor.getGlyphSet()
@@ -50,12 +59,46 @@ def build(base_font, donor_font, xml):
     print(f'{len(targets)} glyphs, {len(set(targets)-set(original_map))} added. {len(payload)} bytes.')
     return payload
 
+def rebuild(game):
+    import bsdiff4
+    asset = font_patch.asset_location(game)
+    with asset.open('rb') as stream:
+        stream.seek(font_patch.RAW_START)
+        base = stream.read(font_patch.FONT_SIZE)
+    font_patch.expect(font_patch.digest(base) == font_patch.FONT_SHA, '游戏自带的原字体指纹不符。')
+    font_patch.expect(font_patch.digest(DONOR.read_bytes()) == DONOR_SHA, '本项目的捐赠字形文件校验失败。')
+    target = build(BytesIO(base), DONOR)
+    font_patch.expect(font_patch.digest(target) == font_patch.NEW_FONT_SHA, '重建的字体指纹不符。')
+    data = bsdiff4.diff(base, target)
+    font_patch.expect(font_patch.digest(data) == font_patch.DELTA_SHA, '重建的差分指纹不符。')
+    return data
+
 if __name__ == '__main__':
-    cli=argparse.ArgumentParser()
-    for name in ['base_font','donor_font','xml','output']:
-        cli.add_argument(name,type=Path)
-    args=cli.parse_args()
-    out=build(args.base_font,args.donor_font,args.xml)
-    delta=bsdiff4.diff(args.base_font.read_bytes(),out)
-    assert bsdiff4.patch(args.base_font.read_bytes(),delta)==out
-    args.output.write_bytes(delta)
+    cli = argparse.ArgumentParser(description=__doc__)
+    cli.add_argument('--game-dir', type=Path, help='Steam game directory (auto-detected by default)')
+    cli.add_argument('--output', type=Path, help='new path for the reproduced font.bsdiff')
+    cli.add_argument('custom', type=Path, nargs='*', metavar='FILE',
+                     help='optional custom build: base_font donor_font xml output')
+    args = cli.parse_args()
+    try:
+        if args.custom:
+            if len(args.custom) != 4 or args.game_dir or args.output:
+                cli.error('自定义构建需要依次传入基础字体、捐赠字体、文本 XML 和输出路径。')
+            original, donor, xml, output = args.custom
+            import bsdiff4
+            base = original.read_bytes()
+            target = build(original, donor, xml)
+            data = bsdiff4.diff(base, target)
+            font_patch.expect(bsdiff4.patch(base, data) == target, '自定义字体差分校验失败。')
+        else:
+            if not args.output:
+                cli.error('请用 --output 指定一个新文件。')
+            output = args.output
+            data = rebuild(args.game_dir)
+        with output.open('xb') as stream:
+            stream.write(data)
+        print(font_patch.digest(data), output)
+    except (OSError, ValueError) as error:
+        sys.exit(str(error))
+    except ImportError:
+        sys.exit('字体维护工具需要 fonttools==4.62.1 和 bsdiff4==1.4.4。')
