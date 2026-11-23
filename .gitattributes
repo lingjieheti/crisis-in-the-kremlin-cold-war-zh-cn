@@ -1,0 +1,11 @@
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.ttf binary
+*.bsdiff binary
+*.webp binary
+# Keep the original upstream license notices byte-for-byte.
+*OFL*.txt -whitespace
+*LICENSE*.txt -whitespace
+.github export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
