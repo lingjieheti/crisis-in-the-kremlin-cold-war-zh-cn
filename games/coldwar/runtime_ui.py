@@ -1,19 +1,12 @@
-"""Build and verify opt-in interface language support from the player's original assembly."""
+"""Recover only a published v1.2.3 assembly to its exact Steam original."""
 import hashlib
-import os
 from pathlib import Path
 import stat
-import subprocess
-import tempfile
-import zipfile
 
 import font_patch
 import game_paths
 
-
-HERE = Path(__file__).resolve().parent / "runtime"
 FILE = Path("CrisisInTheKremlin2_Data/Managed/Assembly-CSharp.dll")
-CECIL_SHA = "d2a23832aaa948ba9a01acc42b5726e34c5f995958f1b30d45c0e7c70b3a72d5"
 ASSEMBLIES = {
     "26243566": ("1fbd571bbe4dec5cd49928d99c2358adcbe3d8cc21ece99b4508dd6820bfbfc2",
                  "a6224a1d8a104336f6bd819dd25536c662cc414c3b5790fd206f9f9511607ab9"),
@@ -33,64 +26,36 @@ def regular(path):
     return path.is_file() and not (getattr(path.lstat(),"st_file_attributes",0) & stat.FILE_ATTRIBUTE_REPARSE_POINT)
 
 
-def compile_rules(path, build):
-    path = path.resolve()
-    csc = Path(os.environ["WINDIR"])/"Microsoft.NET/Framework64/v4.0.30319/csc.exe"
-    if not csc.is_file():
-        csc = Path(os.environ["WINDIR"])/"Microsoft.NET/Framework/v4.0.30319/csc.exe"
-    if not csc.is_file():
-        raise ValueError("没有找到 Windows .NET Framework 编译器。")
-    package = HERE/"mono.cecil.0.11.6.nupkg"
-    if digest(package) != CECIL_SHA:
-        raise ValueError("离线构建组件的校验值不符。")
-    with tempfile.TemporaryDirectory(prefix="coldwar-labels-") as tmp:
-        work = Path(tmp)
-        with zipfile.ZipFile(package) as archive:
-            (work/"Mono.Cecil.dll").write_bytes(archive.read("lib/net40/Mono.Cecil.dll"))
-        def run(args):
-            result = subprocess.run(args, cwd=work, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                    creationflags=subprocess.CREATE_NO_WINDOW, timeout=120)
-            if result.returncode:
-                detail = result.stdout.decode(errors="replace")[-1200:]
-                raise ValueError("无法构建当前游戏的界面文字：" + detail)
-        run([csc,"/nologo","/optimize+","/codepage:65001","/target:library","/r:System.Xml.Linq.dll",
-             "/out:LabelText.dll",str(HERE/"LabelText.cs")])
-        run([csc,"/nologo","/optimize+","/codepage:65001","/r:Mono.Cecil.dll",
-             "/out:BuildLabels.exe",str(HERE/"BuildLabels.cs")])
-        run([work/"BuildLabels.exe",path,work/"localized.dll",work/"LabelText.dll",build])
-        localized = work/"localized.dll"
-        if digest(localized) != ASSEMBLIES[build][1]:
-            raise ValueError("生成的界面文本程序集与本版本不符。")
-        return localized.read_bytes()
-
-
 def manage(game, profile, build, action):
+    if action not in ("preflight", "verify", "install", "restore") or build not in ASSEMBLIES:
+        raise ValueError("未支持的构建或核验操作。")
     game = Path(game) if game is not None else game_paths.game_dir(FILE)
-    path = game/FILE
-    original, patched = ASSEMBLIES[build]
+    path = game / FILE
     backup = profile / (".zhcn-original-assembly-" + build + ".dll")
-    if not regular(path) or (backup.exists() and not regular(backup)):
-        raise ValueError("找不到游戏程序集，或原件备份位置已被重定向。")
+    original, released_v123 = ASSEMBLIES[build]
+    repair = "请先保存自己的修改，并在 Steam 游戏属性的“已安装文件”中验证游戏文件完整性。"
+    if not regular(path):
+        raise ValueError("无法验证本构建的游戏程序。" + repair)
     current = digest(path)
-    if current not in (original,patched) or (backup.exists() and digest(backup) != original):
-        raise ValueError("游戏程序集或已有备份与本 Steam 构建不符。请先保存自己的修改。")
-    if current == patched and not backup.exists():
-        raise ValueError("找不到本构建的原始程序集备份。")
+    if current not in (original, released_v123):
+        raise ValueError("游戏程序集与已知的 Steam 构建不符。" + repair)
+    if action == "verify":
+        if current != original:
+            raise ValueError("仍装有 v1.2.3 的游戏程序。退出游戏后请运行 install 升级到纯资源版。")
+        return
+    if current == original:
+        # Steam may already have restored this file. Leave unrelated backup contents alone.
+        if action != "preflight" and regular(backup) and digest(backup) == original:
+            backup.unlink()
+        return
+    if not regular(backup) or digest(backup) != original:
+        raise ValueError("找不到经过核验的本构建官方原件备份。" + repair)
     if action == "preflight":
         return
-    if action == "verify":
-        if current != patched:
-            raise ValueError("请先安装本版界面汉化。")
-    elif action == "install":
-        if current == original:
-            localized = compile_rules(path,build)
-            if not backup.exists():
-                font_patch.replace_atomic(backup,path.read_bytes())
-            font_patch.replace_atomic(path,localized)
-    elif action == "restore":
-        if current == patched:
-            font_patch.replace_atomic(path,backup.read_bytes())
-        if backup.exists():
-            backup.unlink()
-    else:
-        raise ValueError("无法识别界面文字处理命令。")
+    data = backup.read_bytes()
+    if hashlib.sha256(data).hexdigest() != original or digest(path) != released_v123:
+        raise ValueError("迁移时游戏程序或备份发生变化。" + repair)
+    font_patch.replace_atomic(path, data)
+    if digest(path) != original:
+        raise ValueError("恢复后的游戏程序未通过官方原件哈希核验。" + repair)
+    backup.unlink()

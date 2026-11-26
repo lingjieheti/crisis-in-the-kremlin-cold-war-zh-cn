@@ -1,7 +1,5 @@
-"""Tests for the renderer's opt-in marker, input hints and the reviewed numeric thresholds."""
+"""Regression checks for the resource-only release and verified original recovery."""
 from pathlib import Path
-import os
-import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch as mock
@@ -35,13 +33,15 @@ class DisplayLabels(unittest.TestCase):
         for part in ("{0}","125 × 120","512 KB","PNG"):
             self.assertIn(part,icon)
 
-    def test_marker_preserves_game_nodes_and_is_idempotent(self):
-        source = b"<text>\n <settings><name>EN</name></settings>\n</text>"
-        with mock.object(patch,"read_json",side_effect=lambda p: {} if p.name.startswith("proofread") else {"/settings/name":"中文"}):
-            marked = patch.release_edits(source)
-            self.assertEqual(patch.release_edits(marked),marked)
-        self.assertEqual(marked.count(b"<!--zhcn-coldwar-local:ui-->"),1)
-        self.assertEqual(list(patch.leaf_nodes(ET.fromstring(marked))),["/settings/name"])
+    def test_removes_retired_marker_and_preserves_translated_content(self):
+        source = b"<text><!--zhcn-coldwar-local:ui--><settings><name>EN</name><language>Language</language></settings></text>"
+        with mock.object(patch, "read_json", side_effect=lambda p: {} if p.name.startswith("proofread") else {"/settings/name":"中文"}):
+            result = patch.release_edits(source)
+            self.assertEqual(patch.release_edits(result),result)
+        self.assertNotIn(b"<!--",result)
+        nodes = patch.leaf_nodes(ET.fromstring(result))
+        self.assertEqual(nodes["/settings/language"].text,"语言（English 为中文）")
+        self.assertEqual(nodes["/settings/name"].text,"中文")
 
     def test_sparse_corrections_are_authenticated_and_repeatable(self):
         before = "𠀀价格降到到50%，名称的的变化。"
@@ -64,53 +64,39 @@ class DisplayLabels(unittest.TestCase):
                     runtime_ui.manage(game,Path(temp),patch.BUILD,action)
             self.assertEqual(assembly.read_bytes(),b"third-party modification")
 
-    @unittest.skipUnless(os.name=="nt","Windows .NET Framework")
-    def test_native_interaction_formatting_and_xml_opt_in(self):
-        program = r'''using System;
-using System.Xml.Linq;
-class Fixture {
-    static void Check(bool v) { if (!v) throw new Exception("Unexpected label"); }
-    static void Main() {
-        Check(!LabelText.IsOurDocument(null));
-        Check(!LabelText.IsOurDocument(XDocument.Parse("<r><a/></r>")));
-        Check(!LabelText.IsOurDocument(XDocument.Parse("<r><!--other--><a/></r>")));
-        Check(LabelText.IsOurDocument(XDocument.Parse("<r>\n <!--zhcn-coldwar-local:ui--><a/></r>",LoadOptions.SetLineInfo)));
-        const string marker = "<?xml version='1.0'?><Root><!--zhcn-coldwar-local:ui--><system/></Root>";
-        Check(LabelText.IsOurSource("zhcn-coldwar-local",marker));
-        Check(!LabelText.IsOurSource("another-translation",marker));
-        Check(!LabelText.IsOurSource("zhcn-coldwar-local","<Root><system/></Root>"));
-        Check(LabelText.LanguageRow("Язык","ru",true).Contains("после выхода из настроек"));
-        Check(LabelText.LanguageRow("语言","en",true).Contains("关闭设置后生效"));
-        Check(LabelText.LanguageRow("语言","en",false)=="语言");
-        Check(LabelText.LanguageRow("Langue","fr",true)==null);
-        Check(LabelText.Bindings("Press O", "O") == "按 O");
-        Check(LabelText.Bindings("Press R", "R") == "按 R");
-        Check(LabelText.Bindings("Press A | Hold R1", "A | R1") == "按 A | 长按 R1");
-        Check(LabelText.Bindings("Tap X | O", "X | O") == "轻按 X | O");
-        Check(LabelText.Bindings("Press Press key", "Press key") == "按 Press key");
-        Check(LabelText.Bindings("Debug Press key", "Debug Press key") == "Debug Press key");
-        Check(LabelText.Bindings("Custom Trigger A", "A") == "Custom Trigger A");
-        Check(LabelText.Bindings("Press O | X", "Q") == "Press O | X");
-        XDocument notices = XDocument.Parse("<r><!--zhcn-coldwar-local:ui--><system><error_occured>发送日志</error_occured><open_log_file>打开日志</open_log_file><OK>确定</OK><steam_error>同步失败</steam_error><steam_error_no_pipe>无法连接</steam_error_no_pipe></system></r>");
-        string raw = "[Steam] SteamAPI init failed after 5x2 attempts. Result: k_ESteamAPIInitResult_FailedGeneric. Message: No appID found. IsSteamRunning: True.";
-        string rendered = LabelText.SteamBody("original notice\n"+raw,notices);
-        Check(rendered.Contains("未取得游戏的应用编号") && rendered.Contains(raw));
-        Check(LabelText.SteamBody("ordinary game notice",notices) == null);
-        Check(LabelText.SteamBody("Steam synchronization failed.\n\nCause: no connection to it could be established.",notices) == "同步失败\n\n无法连接");
-        Check(LabelText.SteamButton("Open log file",notices) == "打开日志");
-        Check(LabelText.SteamButton("Unrelated action",notices) == null);
-    }
-}'''
-        with tempfile.TemporaryDirectory() as tmp:
-            temp = Path(tmp)
-            source = temp/"Fixture.cs"
-            source.write_text(program,encoding="utf-8-sig")
-            csc = Path(os.environ["WINDIR"])/"Microsoft.NET/Framework64/v4.0.30319/csc.exe"
-            executable = temp/"Fixture.exe"
-            subprocess.run([csc,"/nologo","/optimize+","/codepage:65001","/r:System.Xml.Linq.dll",
-                            "/out:"+str(executable),source,runtime_ui.HERE/"LabelText.cs"],check=True)
-            subprocess.run([executable],check=True)
+    def test_restores_only_known_previous_build_and_preserves_other_files(self):
+        reference = b"official fixture"
+        retired = b"released v1.2.3 fixture"
+        checks = (patch.sha(reference), patch.sha(retired))
+        for build in patch.OUTPUT_XML:
+            with self.subTest(build=build), tempfile.TemporaryDirectory() as tmp, mock.dict(runtime_ui.ASSEMBLIES,{build:checks}):
+                profile = Path(tmp)
+                game = profile/"game"
+                path = game/runtime_ui.FILE
+                path.parent.mkdir(parents=True)
+                path.write_bytes(retired)
+                backup = profile/(".zhcn-original-assembly-"+build+".dll")
+                sig=game/"build.sig"
+                sig.write_bytes(b"unaltered signature sentinel")
+                for bad in (None,b"modified backup"):
+                    if bad:backup.write_bytes(bad)
+                    with self.assertRaisesRegex(ValueError,"Steam"):
+                        runtime_ui.manage(game,profile,build,"install")
+                    self.assertEqual(path.read_bytes(),retired)
+                backup.write_bytes(reference)
+                with self.assertRaisesRegex(ValueError,"install"):
+                    runtime_ui.manage(game,profile,build,"verify")
+                runtime_ui.manage(game,profile,build,"install")
+                self.assertFalse(backup.exists())
+                self.assertEqual(path.read_bytes(),reference)
+                stamp=path.stat().st_mtime_ns
+                for action in ("verify","install","restore"):
+                    runtime_ui.manage(game,profile,build,action)
+                self.assertEqual(path.stat().st_mtime_ns,stamp)
+                self.assertEqual(sig.read_bytes(),b"unaltered signature sentinel")
+                backup.write_bytes(b"unknown user backup")
+                runtime_ui.manage(game,profile,build,"install")
+                self.assertEqual(backup.read_bytes(),b"unknown user backup")
 
-
-if __name__=="__main__":
+if __name__ == "__main__":
     unittest.main()

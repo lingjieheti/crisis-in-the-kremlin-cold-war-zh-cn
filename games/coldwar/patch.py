@@ -54,11 +54,17 @@ V122_OUTPUT = {
     PLANETARIUM_BUILD: "8c16176ddc23fcd38b02c675c52db9751b020d6433a8d056a8ff0bad2249f99b",
     BUILD: "4ee66202a495c8fd187f5c410267fe1f2fe7f3c701ac2127d48cb0358bdc4596",
 }
-LEGACY_XML = "725cd507a6bbade071a71cd110893abe0153a6cfd22cd40c0f7d5021be8aaded"
-PLANETARIUM_XML = "49b3fc76a698bf3724cc6dacf05e2f7f7ceb7af892f7ac2d400a2482e51edbb3"
-RELEASE_XML = "0547e7b6eabbe6d5c9b1cf90d6ad19ab140178e3d8b4e23bd632bfb5ce7618d5"
-GENERATIONS = (V1_XML, V1_2_XML, V122_OUTPUT[LEGACY_BUILD], LEGACY_XML,
-               V122_OUTPUT[PLANETARIUM_BUILD], PLANETARIUM_XML, V122_OUTPUT[BUILD], RELEASE_XML)
+V123_OUTPUT = {
+    LEGACY_BUILD: "725cd507a6bbade071a71cd110893abe0153a6cfd22cd40c0f7d5021be8aaded",
+    PLANETARIUM_BUILD: "49b3fc76a698bf3724cc6dacf05e2f7f7ceb7af892f7ac2d400a2482e51edbb3",
+    BUILD: "0547e7b6eabbe6d5c9b1cf90d6ad19ab140178e3d8b4e23bd632bfb5ce7618d5",
+}
+LEGACY_XML = "35d22fb940414f1b27c14734684f030c93d9b1b4f60a4bf344d82699586c8a5e"
+PLANETARIUM_XML = "26920b91549bf9d8f025c7da05a26c6d6a7d8a118b886d9c306c55df9ed2cda1"
+RELEASE_XML = "bcd572c7a596ff388840336d6cadc59e8afff44bb970b70acb77cd7925919dce"
+GENERATIONS = (V1_XML, V1_2_XML, V122_OUTPUT[LEGACY_BUILD], V123_OUTPUT[LEGACY_BUILD], LEGACY_XML,
+               V122_OUTPUT[PLANETARIUM_BUILD], V123_OUTPUT[PLANETARIUM_BUILD], PLANETARIUM_XML,
+               V122_OUTPUT[BUILD], V123_OUTPUT[BUILD], RELEASE_XML)
 OUTPUT_XML = {BUILD: RELEASE_XML, PLANETARIUM_BUILD: PLANETARIUM_XML, LEGACY_BUILD: LEGACY_XML}
 HOTFIX_REMOVED = {"/system/save_resolution_question", "/ui/apply"}
 REGKEY = r"Software\Nostalgames\CrisisInTheKremlin2"
@@ -205,7 +211,7 @@ def release_edits(xml):
     for key, change in read_json(HERE / "proofread-1.2.3.json").items():
         ensure(key in nodes, f"未找到文字勘误条目：{key}")
         nodes[key].text = proofread(nodes[key].text,change)
-    root.insert(0, ET.Comment("zhcn-coldwar-local:ui"))
+    nodes["/settings/language"].text = "语言（English 为中文）"
     return ET.tostring(root, encoding="utf-8", xml_declaration=True)
 
 def render_text(xml, build=LEGACY_BUILD, english=None):
@@ -216,17 +222,17 @@ def render_text(xml, build=LEGACY_BUILD, english=None):
     if current in GENERATIONS:
         ensure(GENERATIONS.index(current) < GENERATIONS.index(expected),
                "这是较新游戏构建的汉化；切回旧版游戏时，请先还原汉化，再安装对应版本。")
-    if current == V122_OUTPUT[build]:
+    if current in (V122_OUTPUT[build], V123_OUTPUT[build]):
         result = xml
     elif build == LEGACY_BUILD:
         result = legacy_text(xml)
     else:
         ensure(english is not None, "缺少当前构建的英文语言资源。")
-        if current in (V122_OUTPUT[PLANETARIUM_BUILD], PLANETARIUM_XML):
+        if current in (V122_OUTPUT[PLANETARIUM_BUILD], V123_OUTPUT[PLANETARIUM_BUILD], PLANETARIUM_XML):
             source = xml
             updates = {}
         else:
-            source = xml if current == LEGACY_XML else legacy_text(xml)
+            source = xml if current in (V123_OUTPUT[LEGACY_BUILD], LEGACY_XML) else legacy_text(xml)
             updates = read_json(HERE / "game1257.zh-CN.json")
         if build == BUILD:
             for key in HOTFIX_REMOVED:
@@ -404,11 +410,15 @@ def run(args):
             ensure(state_file.is_file() and not reparse(state_file), "安装记录已被重定向。")
         build, english = language_data(args.game_dir)
         asset = font_patch.asset_location(args.game_dir)
+        if args.action == "install":
+            # Restore an authenticated v1.2.3 file before processing any mod data.
+            runtime_ui.manage(args.game_dir, root, build, "install")
         check_font_build(asset, build)
         if args.action in ("install","restore"):
             font_patch.manage(asset, root, "preflight")
             display_layout.manage(args.game_dir, build, "preflight")
-            runtime_ui.manage(args.game_dir, root, build, "preflight")
+            if args.action == "restore":
+                runtime_ui.manage(args.game_dir, root, build, "preflight")
         if args.action == "restore":
             ensure(state_file.exists(), "找不到本补丁的安装记录。")
             state = read_json(state_file)
@@ -485,7 +495,7 @@ def run(args):
         verify_files(folder, hashes)
         font_patch.manage(asset, root, "install")
         display_layout.manage(args.game_dir, build, "install")
-        runtime_ui.manage(args.game_dir, root, build, "install")
+        runtime_ui.manage(args.game_dir, root, build, "verify")
         if state.get("pending_activation"):
             find_conflicting(base, mods, rows)
             desired = activate(rows)

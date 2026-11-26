@@ -106,10 +106,10 @@ def check_revised_text():
     for key,content in latest.items():
         require(re.fullmatch(r"/\w+/\w+",key),"Invalid 1.2.3 key")
         text_line(content)
-    tools = GAMES/"coldwar/runtime"
-    require(hashlib.sha256((tools/"mono.cecil.0.11.6.nupkg").read_bytes()).hexdigest() ==
-            "d2a23832aaa948ba9a01acc42b5726e34c5f995958f1b30d45c0e7c70b3a72d5", "Offline build package differs")
-    require("Permission is hereby granted" in (tools/"Mono.Cecil-LICENSE.txt").read_text("utf-8-sig"),"Missing license")
+    folder = GAMES / "coldwar"
+    require(not any((folder / "runtime").glob("*")), "Retired assembly builder is present")
+    require(not any(folder.rglob("*.nupkg")) and not any(folder.rglob("*.dll")),
+            "Resource-only patch must not ship an assembly or a package to rewrite one")
     links = read_json(GAMES / "coldwar/wiki_zh.json")
     for key, value in links.items():
         require(re.fullmatch(r"/(?:char_wiki_links|decision_wiki_links|doctrine_wiki_links|positions_wiki)/\w+", key),
