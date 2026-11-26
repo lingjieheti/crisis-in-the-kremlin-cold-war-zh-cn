@@ -45,9 +45,25 @@ def check_coldwar(chars):
         require(re.fullmatch(r"/\w+/\w+", key), f"Invalid XML key: {key}")
         chars.update(text_line(value))
     require(sum(k.startswith("/player_country_desc/") for k in patch) >= 397, "Country-name set incomplete")
-    for key, counts in (("text", [24, 26, 34, 4]), ("patch_1_2_5_6_text", [3, 8, 2])):
+    current = read_json(folder / "game1257.zh-CN.json")
+    require(len(current) >= 1338, "Missing additions for Steam build 26891377")
+    hotfix = read_json(folder / "game1258.zh-CN.json")
+    require(len(hotfix) >= 163, "Missing additions for Steam build 26955082")
+    for key, value in list(current.items()) + list(hotfix.items()):
+        require(re.fullmatch(r"(?:/[\w.-]+(?:\[\d+\])?)+", key), f"Invalid 1.2.5.7 XML key: {key}")
+        require(isinstance(value, str) and not any(c in value for c in ("\0", "\ufffd")),
+                f"Invalid 1.2.5.7 translation: {key}")
+        chars.update(value)
+    controls = re.findall(r"\{pad:[a-z0-9_]+\}", "".join(current.values()))
+    require({"{pad:north}", "{pad:select}", "{pad:start}", "{pad:south}"} <= set(controls),
+            "Missing dynamic controller hints")
+    for source, key, counts in ((patch, "text", [24, 26, 34, 4]),
+                                (patch, "patch_1_2_5_6_text", [3, 8, 2]),
+                                (current, "patch_1_2_5_7_text", [32, 23, 32, 28]),
+                                (hotfix, "patch_1_2_5_7_text", [33, 23, 32, 28]),
+                                (hotfix, "patch_1_2_5_8_text", [2, 1, 3, 2])):
         items = []
-        for line in patch["/patchnotes/" + key].split("|"):
+        for line in source["/patchnotes/" + key].split("|"):
             if not line:
                 continue
             if any(c.isalpha() for c in line) and not any(c.islower() for c in line):
@@ -74,7 +90,8 @@ def check_coldwar(chars):
         insertions += insert
     require((additions, insertions) == (len(diff), len(extra)) and additions + insertions == total,
             "Cold War font-delta streams do not reconstruct the declared byte count")
-    print(f"Cold War: {len(patch)} entries, country names, patch-note groups and font delta verified")
+    print(f"Cold War: {len(patch)} base revisions, {len(current)} 1.2.5.7 entries, {len(hotfix)} 1.2.5.8 entries, "
+          "controller hints, country names, patch notes and font delta verified")
 
 def check_revised_text():
     links = read_json(GAMES / "coldwar/wiki_zh.json")

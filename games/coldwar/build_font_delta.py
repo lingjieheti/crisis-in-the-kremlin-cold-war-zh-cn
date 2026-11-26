@@ -62,10 +62,7 @@ def build(base_font, donor_font, xml=None):
 def rebuild(game):
     import bsdiff4
     asset = font_patch.asset_location(game)
-    with asset.open('rb') as stream:
-        stream.seek(font_patch.RAW_START)
-        base = stream.read(font_patch.FONT_SIZE)
-    font_patch.expect(font_patch.digest(base) == font_patch.FONT_SHA, '游戏自带的原字体指纹不符。')
+    base = font_patch.font_payload(asset.read_bytes(), patched=False)
     font_patch.expect(font_patch.digest(DONOR.read_bytes()) == DONOR_SHA, '本项目的捐赠字形文件校验失败。')
     target = build(BytesIO(base), DONOR)
     font_patch.expect(font_patch.digest(target) == font_patch.NEW_FONT_SHA, '重建的字体指纹不符。')

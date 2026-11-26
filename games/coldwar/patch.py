@@ -2,6 +2,7 @@
 import argparse
 import base64
 from contextlib import contextmanager
+from collections import Counter
 import hashlib
 import json
 import os
@@ -20,17 +21,39 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, str(HERE))
 import font_patch
 import game_paths
+import display_layout
 
 MOD = "zhcn-coldwar-local"
 ORIGINAL_ID = "114514"
 ITEM = "3523398274"
 GAME = "1922740"
-BUILD = "26243566"
+BUILD = "26955082"
+PLANETARIUM_BUILD = "26891377"
+LEGACY_BUILD = "26243566"
+RESOURCE = Path("CrisisInTheKremlin2_Data/resources.assets")
+LANGUAGES = {
+    BUILD: {
+        "en": (8211228, 4053021, "b4f7363fa7af7e91aed306fd429cb4760dbd6ad9002c9e1bb91cddd7f452009f"),
+        "ru": (1351596, 6319392, "8f815a0a80e0eece31c7521b5f3f702cefb54cbccf9a91eecb457dcb198234cb"),
+    },
+    PLANETARIUM_BUILD: {
+        "en": (8140652, 4006556, "86519454bbba7244f57119522470ddcb31e756ec6019616f19e84868b7d2e90d"),
+        "ru": (1350236, 6250177, "8e60cf4a059d129447fff556b23c06000b330626c6b13682a9e546aa61950642"),
+    },
+    LEGACY_BUILD: {
+        "en": (7702580, 3803613, "2c0187ea472425ea3fff62d0d12ba40e37fa030ca8726fe79308d1cc361eabd0"),
+        "ru": (1257820, 5939182, "0ed08d09f1ad61a8a4777584a2bfd6368d58b26d6c9dcf1017886e64c4da0736"),
+    },
+}
 XML_HASH = "d4aa3fa9c02d761a11e70dabb7dcd5dd643af5d772ea1b4307403935cce17061"
 V1_XML = "ea80a26f85d54e6f1c7ca3e83ba607a41502d7f903e5cb7047e22048e5aa8314"
 V1_2_XML = "1936bf8b50353cbf81bd7b64616bc372e259465bbbc9fcc73e02d2719ede31aa"
-RELEASE_XML = "9b52edb3378c45b98beab0cfdc2ec45cc43d59bf332bd3cceb10d30fcc4bf2a1"
-GENERATIONS = (V1_XML, V1_2_XML, RELEASE_XML)
+LEGACY_XML = "9b52edb3378c45b98beab0cfdc2ec45cc43d59bf332bd3cceb10d30fcc4bf2a1"
+PLANETARIUM_XML = "8c16176ddc23fcd38b02c675c52db9751b020d6433a8d056a8ff0bad2249f99b"
+RELEASE_XML = "4ee66202a495c8fd187f5c410267fe1f2fe7f3c701ac2127d48cb0358bdc4596"
+GENERATIONS = (V1_XML, V1_2_XML, LEGACY_XML, PLANETARIUM_XML, RELEASE_XML)
+OUTPUT_XML = {BUILD: RELEASE_XML, PLANETARIUM_BUILD: PLANETARIUM_XML, LEGACY_BUILD: LEGACY_XML}
+HOTFIX_REMOVED = {"/system/save_resolution_question", "/ui/apply"}
 REGKEY = r"Software\Nostalgames\CrisisInTheKremlin2"
 PREF = "modsPrefsList_h752420768"
 OWN_FILES = {"text.xml", "info.json", "icon.png"}
@@ -56,7 +79,38 @@ def game_running():
 def discover(game=None):
     return game_paths.workshop(game, XML_HASH)
 
-def render_text(xml):
+def language_data(game=None, language="en"):
+    folder = game if game is not None else game_paths.game_dir(RESOURCE)
+    with (folder / RESOURCE).open("rb") as stream:
+        for build, locations in LANGUAGES.items():
+            offset, length, expected = locations[language]
+            stream.seek(offset)
+            xml = stream.read(length)
+            if sha(xml) == expected:
+                return build, xml
+    raise ValueError("不支持此版本的游戏语言资源。支持的 Steam 构建为 " + " 和 ".join(LANGUAGES) + "。")
+
+def check_font_build(asset, build):
+    expected = {LEGACY_BUILD:font_patch.PREVIOUS, PLANETARIUM_BUILD:font_patch.INTERIM, BUILD:font_patch.CURRENT}
+    with asset.open("rb") as stream:
+        digest = hashlib.file_digest(stream, "sha256").hexdigest()
+    ensure(font_patch.asset_layout(digest) == expected[build],
+           "游戏语言与字体属于不同 Steam 构建。请等待 Steam 更新完成，或在游戏属性中验证文件后再试。")
+
+def leaf_nodes(root):
+    def walk(node, path):
+        if not len(node):
+            yield path, node
+        counts = Counter(child.tag for child in node)
+        seen = Counter()
+        for child in node:
+            name = child.tag
+            suffix = f"[{seen[name]}]" if counts[name] > 1 else ""
+            seen[name] += 1
+            yield from walk(child, f"{path}/{name}{suffix}")
+    return dict(walk(root, ""))
+
+def legacy_text(xml):
     root = ET.fromstring(xml)
     patch = read_json(HERE / "patch.json")
     links = read_json(HERE / "wiki_zh.json")
@@ -75,10 +129,77 @@ def render_text(xml):
     checked = ET.fromstring(result)
     ensure(sum(1 for node in checked.iter() if not len(node)) == 18133, "文本项数校验失败。")
     ensure(all(checked.findtext("." + k) == v for k, v in patch.items()), "中文回读校验失败。")
-    ensure(sha(result) == RELEASE_XML, "生成的中文指纹与本版本不符。")
+    ensure(sha(result) == LEGACY_XML, "旧版基础译文的指纹与版本不符。")
     return result
 
-def render(base):
+def planetarium_credits(english, previous, introduction):
+    source = english.split("|")
+    starts = [i for i, line in enumerate(source) if line.startswith("Planetarium art:")]
+    ensure(len(starts) == 1, "官方天象馆图片署名起点不符。")
+    start = starts[0]
+    photos = source[start + 1:start + 4]
+    authors = ("Retro Lenses, CC BY 4.0", "Mikhail Semin, CC BY 4.0", "Frank Kovalchek, CC BY 2.0")
+    ensure(len(photos) == 3 and all(author in line and "commons.wikimedia.org/wiki/File:" in line
+               for author,line in zip(authors,photos)) and source[start + 4:start + 5] == [""],
+           "官方图片署名、许可或链接有变。")
+    lines = previous.split("|")
+    fonts = [i for i,line in enumerate(lines) if line.startswith("本作使用Noto字体")]
+    ensure(len(fonts) == 1, "原中文字体鸣谢位置不符。")
+    at = fonts[0]
+    group = [introduction, *photos, ""]
+    if lines[max(0,at-len(group)):at] != group:
+        ensure(not any(photo in lines for photo in photos), "已有的图片署名不完整。")
+        lines[at:at] = group
+    return "|".join(lines)
+
+def merge_language(english, base, updates):
+    tree = ET.fromstring(english)
+    target = leaf_nodes(tree)
+    previous = leaf_nodes(ET.fromstring(base))
+    ensure(target.keys() >= updates.keys(), "本版中文含有游戏中不存在的键。")
+    missing = target.keys() - previous.keys() - updates.keys()
+    ensure(not missing, f"新版本缺少 {len(missing)} 个中文条目。")
+    for key, element in target.items():
+        if key in updates:
+            value = updates[key]
+            ensure(isinstance(value, str), f"无效译文：{key}")
+            if key == "/credits/text":
+                element.text = planetarium_credits(element.text, previous[key].text, value)
+            else:
+                element.text = value
+        else:
+            element.text = previous[key].text
+        if key in ("/events/events121Result0var0_0", "/events/events121Result0var0_1"):
+            # A literal, unpaired brace after the heading breaks the event's String.Format call.
+            element.text = (element.text or "").replace("</align>}|", "</align>|", 1)
+    return ET.tostring(tree, encoding="utf-8", xml_declaration=True)
+
+def render_text(xml, build=LEGACY_BUILD, english=None):
+    expected = OUTPUT_XML[build]
+    current = sha(xml)
+    if current == expected:
+        return xml
+    if current in GENERATIONS:
+        ensure(GENERATIONS.index(current) < GENERATIONS.index(expected),
+               "这是较新游戏构建的汉化；切回旧版游戏时，请先还原汉化，再安装对应版本。")
+    if build == LEGACY_BUILD:
+        return legacy_text(xml)
+    ensure(english is not None, "缺少当前构建的英文语言资源。")
+    if current == PLANETARIUM_XML:
+        source = xml
+        updates = {}
+    else:
+        source = legacy_text(xml)
+        updates = read_json(HERE / "game1257.zh-CN.json")
+    if build == BUILD:
+        for key in HOTFIX_REMOVED:
+            updates.pop(key, None)
+        updates.update(read_json(HERE / "game1258.zh-CN.json"))
+    result = merge_language(english, source, updates)
+    ensure(sha(result) == expected, "生成的本版中文指纹不符。")
+    return result
+
+def render(base, build=LEGACY_BUILD, english=None):
     info = read_json(base / "info.json")
     ensure(info.get("id") == ORIGINAL_ID and info.get("modType") == "Translation", "所选目录不是支持的社区中文翻译。")
     xml = (base / "text.xml").read_bytes()
@@ -87,7 +208,7 @@ def render(base):
     info.pop("steamPublishedFileId", None)
     info["displayedName"] = "社区中文翻译 · 本地校订"
     info["description"] = "使用本机 Steam 社区中文翻译生成。" + info["description"]
-    return {"text.xml": render_text(xml), "info.json": json_bytes(info), "icon.png": (base / "icon.png").read_bytes()}
+    return {"text.xml": render_text(xml, build, english), "info.json": json_bytes(info), "icon.png": (base / "icon.png").read_bytes()}
 
 def read_pref():
     import winreg
@@ -166,12 +287,13 @@ def has_local_base(data_dir=None):
 
 def upgrade(folder, state_file, state, payload, hashes):
     old = state["files"]
-    ensure(old.get("text.xml") in GENERATIONS[:-1] and old == {**hashes, "text.xml": old["text.xml"]}
-           and hashes["text.xml"] == RELEASE_XML,
+    next_xml = hashes["text.xml"]
+    ensure(next_xml in OUTPUT_XML.values() and old.get("text.xml") in GENERATIONS[:GENERATIONS.index(next_xml)]
+           and old == {**hashes, "text.xml": old["text.xml"]},
            "当前安装记录与支持的旧版不符，请先核对原先的基包和个人改动。")
     verify_generation(folder, old)
     target = folder / "text.xml"
-    if sha(target.read_bytes()) != RELEASE_XML:
+    if sha(target.read_bytes()) != next_xml:
         font_patch.replace_atomic(target, payload["text.xml"], staging_dir=state_file.parent)
     verify_files(folder, hashes)
     # Keep the v1 preference snapshot for eventual restoration. Later mod toggles
@@ -225,7 +347,8 @@ def write_new(path, data):
 def run(args):
     if args.action == "build":
         ensure(args.output is not None and not args.output.exists(), "请用 --output 指定一个尚不存在的输出目录。")
-        payload = render(args.base or discover(args.game_dir))
+        build, english = language_data(args.game_dir)
+        payload = render(args.base or discover(args.game_dir), build, english)
         args.output.mkdir(parents=True)
         for name, data in payload.items():
             write_new(args.output / name, data)
@@ -241,15 +364,19 @@ def run(args):
             ensure(not game_running(), "请先退出游戏。")
         if state_file.exists():
             ensure(state_file.is_file() and not reparse(state_file), "安装记录已被重定向。")
+        build, english = language_data(args.game_dir)
         asset = font_patch.asset_location(args.game_dir)
-        if args.action == "install":
+        check_font_build(asset, build)
+        if args.action in ("install","restore"):
             font_patch.manage(asset, root, "preflight")
+            display_layout.manage(args.game_dir, build, "preflight")
         if args.action == "restore":
             ensure(state_file.exists(), "找不到本补丁的安装记录。")
             state = read_json(state_file)
             ensure(state.get("format") == 1, "不能识别安装记录。")
             if folder.exists():
                 verify_generation(folder, state["files"])
+            display_layout.manage(args.game_dir, build, "restore")
             font_patch.manage(asset, root, "restore")
             write_pref(restore_pref(state))
             if folder.exists():
@@ -261,10 +388,12 @@ def run(args):
         if args.action == "verify":
             ensure(state_file.is_file(), "本补丁尚未安装。")
             state = read_json(state_file)
-            ensure(state.get("format") == 1 and state["files"].get("text.xml") == RELEASE_XML,
+            expected = OUTPUT_XML[build]
+            ensure(state.get("format") == 1 and state["files"].get("text.xml") == expected,
                    "请先运行本版本的 install 完成更新。")
             verify_files(folder, state["files"])
             font_patch.manage(asset, root, "verify")
+            display_layout.manage(args.game_dir, build, "verify")
             _, active = read_pref()
             ensure(any(x["id"] == MOD and x["isLoaded"] for x in active), "本地校订模组未启用。")
             return
@@ -278,17 +407,17 @@ def run(args):
         if base is None and has_local_base(root):
             verify_generation(folder, state["files"])
             payload = {name: (folder / name).read_bytes() for name in OWN_FILES}
-            payload["text.xml"] = render_text(payload["text.xml"])
+            payload["text.xml"] = render_text(payload["text.xml"], build, english)
         else:
             base = base or discover(args.game_dir)
-            payload = render(base)
+            payload = render(base, build, english)
         hashes = {name: sha(data) for name, data in payload.items()}
         current, rows = read_pref()
         if state is not None:
             if state["files"] != hashes:
                 if state.get("pending_activation") and not folder.exists():
                     old = state["files"]
-                    ensure(old.get("text.xml") in GENERATIONS[:-1]
+                    ensure(old.get("text.xml") in GENERATIONS[:GENERATIONS.index(hashes["text.xml"])]
                            and old == {**hashes, "text.xml": old["text.xml"]}, "首次安装记录与基包不符。")
                     state["files"] = hashes
                     font_patch.replace_atomic(state_file, json_bytes(state))
@@ -314,6 +443,7 @@ def run(args):
                 os.rename(staged, folder)
         verify_files(folder, hashes)
         font_patch.manage(asset, root, "install")
+        display_layout.manage(args.game_dir, build, "install")
         if state.get("pending_activation"):
             find_conflicting(base, mods, rows)
             desired = activate(rows)

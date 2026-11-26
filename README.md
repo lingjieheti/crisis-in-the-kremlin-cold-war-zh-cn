@@ -6,7 +6,7 @@
 
 首次安装如缺少社区翻译底包，请保持 Steam 已登录，安装器会请求 Steam 下载。也可手动选择目录。游戏更新后，可点 **核验汉化** 检查当前安装。需要恢复原版时，点击 **还原原版**。
 
-适配 Steam Windows x64 构建 **26243566**。[v1.2.1 修订说明](games/coldwar/COMMUNITY-1.2.1.md) · [校对记录](games/coldwar/AUDIT.md) · [补丁来源与技术说明](games/coldwar/README.md) · [游戏内截图](docs/coldwar-changelog.webp)
+本版适配 Steam Windows x64 游戏 **1.2.5.8（26955082）**，涵盖新增的天象馆、事件、教程和手柄提示，以及新版经济预测、地图和设置界面。游戏 **1.2.5.7（26891377）** 和 **1.2.5.6（26243566）** 也可使用同一安装程序。已经安装上一版汉化的玩家，更新游戏后再次点击 **安装汉化** 即可。[修订说明](games/coldwar/COMMUNITY-1.2.2.md) · [实机前后对照图](docs/interface-review.webp) · [文本审校记录](games/coldwar/AUDIT.md) · [技术说明](games/coldwar/README.md)
 
 <details>
 <summary>从源码构建安装程序</summary>

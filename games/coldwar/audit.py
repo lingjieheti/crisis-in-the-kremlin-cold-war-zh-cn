@@ -16,11 +16,7 @@ import font_patch
 import patch
 
 HERE = Path(__file__).resolve().parent
-SOURCES = {
-    "en": (7702580, 3803613, "2c0187ea472425ea3fff62d0d12ba40e37fa030ca8726fe79308d1cc361eabd0"),
-    "ru": (1257820, 5939182, "0ed08d09f1ad61a8a4777584a2bfd6368d58b26d6c9dcf1017886e64c4da0736"),
-}
-FORMAT = re.compile(r"\{\d+(?:,[^}:]+)?(?::[^}]+)?\}")
+FORMAT = re.compile(r"\{(?:\d+(?:,[^}:]+)?(?::[^}]+)?|pad:[a-z0-9_]+)\}")
 TAG = re.compile(r"<[^>]+>")
 NUMBER = re.compile(r"[+−-]?\d+(?:[.,]\d+)?(?:\s*[%％])?")
 BAD = re.compile(r"вЂ|ï¿½|�|锟斤拷|Ã.|â€")
@@ -34,33 +30,43 @@ DECISION_ARGS = [
 ]
 RUNTIME_FORMATS = {f"/decision_desc/decision12var{i}": Counter("{"+str(n)+"}" for n in nums)
                    for i, nums in enumerate(DECISION_ARGS)}
+# Event74.StartEvent supplies the leader address in slot 0 on build 26891377.
+# The Russian alternate description uses it; this English row omits it.
+CURRENT_FORMATS = {**RUNTIME_FORMATS, "/events/events74Desc1": Counter(["{0}"])}
 
 
 def leaves(blob):
-    def visit(node, path):
-        if not len(node):
-            yield path, (node.text or "", node.attrib)
-            return
-        counts = Counter(child.tag for child in node)
-        seen = Counter()
-        for child in node:
-            name = child.tag
-            suffix = f"[{seen[name]}]" if counts[name] > 1 else ""
-            seen[name] += 1
-            yield from visit(child, f"{path}/{name}{suffix}")
-    return dict(visit(ET.fromstring(blob), ""))
+    return {k:(node.text or "", node.attrib) for k,node in patch.leaf_nodes(ET.fromstring(blob)).items()}
 
+def tree_layout(blob):
+    return [(node.tag, sorted(node.attrib.items()), len(node)) for node in ET.fromstring(blob).iter()]
 
 def sources(game):
-    asset = game / "CrisisInTheKremlin2_Data/resources.assets"
-    languages = []
-    with asset.open("rb") as stream:
-        for offset, size, expected in SOURCES.values():
-            stream.seek(offset)
-            xml = stream.read(size)
-            patch.ensure(patch.sha(xml) == expected, "游戏原始语言资源与支持的版本不同。")
-            languages.append(leaves(xml))
-    return languages
+    return [leaves(patch.language_data(game, language)[1]) for language in ("en", "ru")]
+
+
+KEY_ALIASES = {
+    "SPACE": ("Space", "空格"), "Backspace": ("Backspace", "退格"),
+    "Tab": ("Tab", "制表"), "Select": ("Select", "选择键"),
+    "+": ("+", "＋", "加号"), "–": ("-", "−", "–", "－", "减号"),
+    ",": (",", "逗号"), ".": (".", "句号", "句点"),
+}
+KEY_ROWS = {"/hotkey/open_event": ("E",), "/ui/event_answers_eye_hint": ("E","SPACE"),
+            "/ui/pad_cursor_hint": ("Select","A","X"), "/tutorial/part125": ("Ctrl","Shift"),
+            "/tutorial/part125_pad": ("+","–")}
+
+def missing_shortcuts(key, english, chinese):
+    if key in ("/tutorial/part2", "/tutorial/part123"):
+        keys = set(re.findall("“([^”]+)”", english))
+    else:
+        keys = KEY_ROWS.get(key, ())
+    missing = []
+    for label in keys:
+        variants = KEY_ALIASES.get(label, (label,))
+        if not any(re.search(r"(?<![a-zA-Z0-9])" + re.escape(v) + r"(?![a-zA-Z0-9])",
+                             chinese, re.I) for v in variants):
+            missing.append(label)
+    return sorted(missing)
 
 
 def number_tokens(text):
@@ -71,13 +77,10 @@ def number_tokens(text):
 def glyph_test(asset, chinese):
     # The game's Unicode full-repertoire format-12 cmap is pinned by both font hashes.
     raw = asset.read_bytes()
-    if patch.sha(raw) == font_patch.ASSET_SHA:
+    checksum = patch.sha(raw)
+    if checksum == font_patch.asset_layout(checksum).original:
         raw = font_patch.build_assets(raw, (HERE / "font.bsdiff").read_bytes())
-    patch.ensure(patch.sha(raw) == font_patch.PATCHED_SHA, "字体资源版本不匹配。")
-    relative, = struct.unpack_from("<Q", raw, font_patch.ENTRY + 8)
-    start = font_patch.DATA_START + relative + font_patch.RAW_START - font_patch.OBJECT_START
-    size, = struct.unpack_from("<I", raw, start - 4)
-    font = memoryview(raw)[start:start + size]
+    font = font_patch.font_payload(raw, patched=True)
     patch.ensure(patch.sha(font) == font_patch.NEW_FONT_SHA, "字体内容校验失败。")
     tables, = struct.unpack_from(">H", font, 4)
     for i in range(tables):
@@ -148,17 +151,27 @@ def semantic_review(path, keys, en, ru, zh, limit):
 
 
 def main(args):
-    en, ru = sources(args.game_dir)
+    build, english = patch.language_data(args.game_dir)
+    ru_build, russian = patch.language_data(args.game_dir, "ru")
+    en, ru = leaves(english), leaves(russian)
     base = leaves((args.base / "text.xml").read_bytes())
-    patch.ensure(en.keys() == ru.keys() == base.keys(), "三份语言资源的键集合不同。")
+    patch.ensure(build == ru_build and en.keys() == ru.keys(), "两份原版语言的构建或键集合不同。")
+    expected = {patch.LEGACY_BUILD:(0,0,18133), patch.PLANETARIUM_BUILD:(1338,8,19463),
+                patch.BUILD:(1501,10,19624)}[build]
+    patch.ensure((len(en.keys()-base.keys()),len(base.keys()-en.keys()),len(en)) == expected,
+                 "原版与工坊文本的新增、删除或现有项数不符。")
     if args.compare_xml:
-        final = leaves(args.compare_xml.read_bytes())
+        result = args.compare_xml.read_bytes()
     else:
-        final = leaves(patch.render(args.base)["text.xml"])
+        result = patch.render(args.base, build, english)["text.xml"]
+    final = leaves(result)
     patch.ensure(en.keys() == final.keys(), "生成版键集合不同。")
+    if build != patch.LEGACY_BUILD:
+        patch.ensure(tree_layout(result) == tree_layout(english), "新英文原版与生成版节点顺序、属性或层次不同。")
     issues = defaultdict(list)
     duplicate = defaultdict(list)
     hints = defaultdict(list)
+    rules = CURRENT_FORMATS if build != patch.LEGACY_BUILD else RUNTIME_FORMATS
     for k,(eng,attrs) in en.items():
         rus = ru[k][0]
         zh, zh_attrs = final[k]
@@ -166,10 +179,12 @@ def main(args):
         if attrs != zh_attrs:issues["属性差异"].append(k)
         if BAD.search(zh):issues["乱码"].append(k)
         if section not in WIKI:
-            if FORMAT.findall(zh) and any("{" in token[1:] for token in FORMAT.findall(zh)):
+            if build != patch.LEGACY_BUILD and re.search(r"[{}]",FORMAT.sub("",zh)):
                 issues["异常占位符"].append(k)
-            expected = RUNTIME_FORMATS.get(k, Counter(FORMAT.findall(eng)))
+            expected = rules.get(k, Counter(FORMAT.findall(eng)))
             if Counter(FORMAT.findall(zh)) != expected:issues["格式参数差异"].append(k)
+            if build != patch.LEGACY_BUILD and (missing := missing_shortcuts(k,eng,zh)):
+                issues["实体按键缺失"].append((k,missing))
             if eng.strip() and not zh.strip():issues["空译文"].append(k)
             if re.search(r"[а-яёА-ЯЁ]{3,}", zh):hints["西里尔文残留"].append(k)
             if re.search(r"(?<![a-z])[A-Za-z]+ [a-z]+ [a-z]+",zh):hints["连续英文"].append(k)
@@ -180,9 +195,17 @@ def main(args):
         elif eng.strip() and not zh.strip():
             hints["有外文链接但中文留空"].append(k)
     distinct = [rows for rows in duplicate.values() if len({en[k][0] for k in rows})>1]
-    report = {"文本项":len(en), "分区":len({k.split('/')[1] for k in en}),
-              "中文改动项":sum(base[k][0]!=final[k][0] for k in en),
-              "格式例外规则":len(RUNTIME_FORMATS),
+    def attributes(rows):
+        return {(key, name): value for key, (_, attrs) in rows.items() for name, value in attrs.items()}
+    base_attrs, target_attrs = attributes(base), attributes(en)
+    report = {"Steam构建":build, "文本项":len(en), "分区":len({k.split('/')[1] for k in en}),
+              "新增项":len(en.keys()-base.keys()), "移除项":len(base.keys()-en.keys()),
+              "节点总数":len(tree_layout(result)), "叶属性总数":len(target_attrs),
+              "新增叶属性":len(target_attrs.keys()-base_attrs.keys()),
+              "移除叶属性":len(base_attrs.keys()-target_attrs.keys()),
+              "原键属性值改变":sum(base_attrs[k]!=target_attrs[k] for k in base_attrs.keys() & target_attrs.keys()),
+              "中文改动项":sum(k not in base or base[k][0]!=final[k][0] for k in en),
+              "格式例外规则":len(rules),
               "中文百科链接":sum(final[k][0].startswith("https://zh.wikipedia.org/") for k in en),
               "候选":{k:len(v) for k,v in hints.items()},
               "同区长中文重复且英文不同的组":len(distinct), "错误":dict(issues)}

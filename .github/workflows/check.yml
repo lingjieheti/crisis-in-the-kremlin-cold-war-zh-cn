@@ -24,7 +24,7 @@ jobs:
       - name: Check release files and player commands without Steam
         run: python -B -X utf8 tools/check_release.py
       - name: Test game patch regressions
-        run: python -B -X utf8 games/coldwar/test_backend.py
+        run: python -B -X utf8 -m unittest discover -s games/coldwar -p 'test_*.py'
 
   installer-smoke:
     name: Windows installer smoke
