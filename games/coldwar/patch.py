@@ -22,6 +22,7 @@ sys.path.insert(0, str(HERE))
 import font_patch
 import game_paths
 import display_layout
+import runtime_ui
 
 MOD = "zhcn-coldwar-local"
 ORIGINAL_ID = "114514"
@@ -48,10 +49,16 @@ LANGUAGES = {
 XML_HASH = "d4aa3fa9c02d761a11e70dabb7dcd5dd643af5d772ea1b4307403935cce17061"
 V1_XML = "ea80a26f85d54e6f1c7ca3e83ba607a41502d7f903e5cb7047e22048e5aa8314"
 V1_2_XML = "1936bf8b50353cbf81bd7b64616bc372e259465bbbc9fcc73e02d2719ede31aa"
-LEGACY_XML = "9b52edb3378c45b98beab0cfdc2ec45cc43d59bf332bd3cceb10d30fcc4bf2a1"
-PLANETARIUM_XML = "8c16176ddc23fcd38b02c675c52db9751b020d6433a8d056a8ff0bad2249f99b"
-RELEASE_XML = "4ee66202a495c8fd187f5c410267fe1f2fe7f3c701ac2127d48cb0358bdc4596"
-GENERATIONS = (V1_XML, V1_2_XML, LEGACY_XML, PLANETARIUM_XML, RELEASE_XML)
+V122_OUTPUT = {
+    LEGACY_BUILD: "9b52edb3378c45b98beab0cfdc2ec45cc43d59bf332bd3cceb10d30fcc4bf2a1",
+    PLANETARIUM_BUILD: "8c16176ddc23fcd38b02c675c52db9751b020d6433a8d056a8ff0bad2249f99b",
+    BUILD: "4ee66202a495c8fd187f5c410267fe1f2fe7f3c701ac2127d48cb0358bdc4596",
+}
+LEGACY_XML = "725cd507a6bbade071a71cd110893abe0153a6cfd22cd40c0f7d5021be8aaded"
+PLANETARIUM_XML = "49b3fc76a698bf3724cc6dacf05e2f7f7ceb7af892f7ac2d400a2482e51edbb3"
+RELEASE_XML = "0547e7b6eabbe6d5c9b1cf90d6ad19ab140178e3d8b4e23bd632bfb5ce7618d5"
+GENERATIONS = (V1_XML, V1_2_XML, V122_OUTPUT[LEGACY_BUILD], LEGACY_XML,
+               V122_OUTPUT[PLANETARIUM_BUILD], PLANETARIUM_XML, V122_OUTPUT[BUILD], RELEASE_XML)
 OUTPUT_XML = {BUILD: RELEASE_XML, PLANETARIUM_BUILD: PLANETARIUM_XML, LEGACY_BUILD: LEGACY_XML}
 HOTFIX_REMOVED = {"/system/save_resolution_question", "/ui/apply"}
 REGKEY = r"Software\Nostalgames\CrisisInTheKremlin2"
@@ -129,7 +136,7 @@ def legacy_text(xml):
     checked = ET.fromstring(result)
     ensure(sum(1 for node in checked.iter() if not len(node)) == 18133, "文本项数校验失败。")
     ensure(all(checked.findtext("." + k) == v for k, v in patch.items()), "中文回读校验失败。")
-    ensure(sha(result) == LEGACY_XML, "旧版基础译文的指纹与版本不符。")
+    ensure(sha(result) == V122_OUTPUT[LEGACY_BUILD], "旧版基础译文的指纹与版本不符。")
     return result
 
 def planetarium_credits(english, previous, introduction):
@@ -174,6 +181,33 @@ def merge_language(english, base, updates):
             element.text = (element.text or "").replace("</align>}|", "</align>|", 1)
     return ET.tostring(tree, encoding="utf-8", xml_declaration=True)
 
+def proofread(text, change):
+    """Apply small local edits to the authenticated source, in Unicode code points."""
+    current = sha(text.encode("utf-8"))
+    if current == change["result"]:
+        return text
+    ensure(current == change["source"], "文字勘误与原句不符。")
+    limit = len(text)
+    for offset, before, after in reversed(change["edits"]):
+        ensure(0 <= offset <= limit - len(before) and text[offset:offset+len(before)] == before,
+               "文字勘误的片段与位置不符。")
+        text = text[:offset] + after + text[offset+len(before):]
+        limit = offset
+    ensure(sha(text.encode("utf-8")) == change["result"], "文字勘误结果的指纹不符。")
+    return text
+
+def release_edits(xml):
+    root = ET.fromstring(xml)
+    nodes = leaf_nodes(root)
+    for key, value in read_json(HERE / "review-1.2.3.zh-CN.json").items():
+        ensure(key in nodes and isinstance(value, str), f"无效的 1.2.3 校订项：{key}")
+        nodes[key].text = value
+    for key, change in read_json(HERE / "proofread-1.2.3.json").items():
+        ensure(key in nodes, f"未找到文字勘误条目：{key}")
+        nodes[key].text = proofread(nodes[key].text,change)
+    root.insert(0, ET.Comment("zhcn-coldwar-local:ui"))
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+
 def render_text(xml, build=LEGACY_BUILD, english=None):
     expected = OUTPUT_XML[build]
     current = sha(xml)
@@ -182,20 +216,24 @@ def render_text(xml, build=LEGACY_BUILD, english=None):
     if current in GENERATIONS:
         ensure(GENERATIONS.index(current) < GENERATIONS.index(expected),
                "这是较新游戏构建的汉化；切回旧版游戏时，请先还原汉化，再安装对应版本。")
-    if build == LEGACY_BUILD:
-        return legacy_text(xml)
-    ensure(english is not None, "缺少当前构建的英文语言资源。")
-    if current == PLANETARIUM_XML:
-        source = xml
-        updates = {}
+    if current == V122_OUTPUT[build]:
+        result = xml
+    elif build == LEGACY_BUILD:
+        result = legacy_text(xml)
     else:
-        source = legacy_text(xml)
-        updates = read_json(HERE / "game1257.zh-CN.json")
-    if build == BUILD:
-        for key in HOTFIX_REMOVED:
-            updates.pop(key, None)
-        updates.update(read_json(HERE / "game1258.zh-CN.json"))
-    result = merge_language(english, source, updates)
+        ensure(english is not None, "缺少当前构建的英文语言资源。")
+        if current in (V122_OUTPUT[PLANETARIUM_BUILD], PLANETARIUM_XML):
+            source = xml
+            updates = {}
+        else:
+            source = xml if current == LEGACY_XML else legacy_text(xml)
+            updates = read_json(HERE / "game1257.zh-CN.json")
+        if build == BUILD:
+            for key in HOTFIX_REMOVED:
+                updates.pop(key, None)
+            updates.update(read_json(HERE / "game1258.zh-CN.json"))
+        result = merge_language(english, source, updates)
+    result = release_edits(result)
     ensure(sha(result) == expected, "生成的本版中文指纹不符。")
     return result
 
@@ -370,12 +408,14 @@ def run(args):
         if args.action in ("install","restore"):
             font_patch.manage(asset, root, "preflight")
             display_layout.manage(args.game_dir, build, "preflight")
+            runtime_ui.manage(args.game_dir, root, build, "preflight")
         if args.action == "restore":
             ensure(state_file.exists(), "找不到本补丁的安装记录。")
             state = read_json(state_file)
             ensure(state.get("format") == 1, "不能识别安装记录。")
             if folder.exists():
                 verify_generation(folder, state["files"])
+            runtime_ui.manage(args.game_dir, root, build, "restore")
             display_layout.manage(args.game_dir, build, "restore")
             font_patch.manage(asset, root, "restore")
             write_pref(restore_pref(state))
@@ -394,6 +434,7 @@ def run(args):
             verify_files(folder, state["files"])
             font_patch.manage(asset, root, "verify")
             display_layout.manage(args.game_dir, build, "verify")
+            runtime_ui.manage(args.game_dir, root, build, "verify")
             _, active = read_pref()
             ensure(any(x["id"] == MOD and x["isLoaded"] for x in active), "本地校订模组未启用。")
             return
@@ -444,6 +485,7 @@ def run(args):
         verify_files(folder, hashes)
         font_patch.manage(asset, root, "install")
         display_layout.manage(args.game_dir, build, "install")
+        runtime_ui.manage(args.game_dir, root, build, "install")
         if state.get("pending_activation"):
             find_conflicting(base, mods, rows)
             desired = activate(rows)

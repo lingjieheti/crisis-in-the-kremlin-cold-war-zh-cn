@@ -94,6 +94,22 @@ def check_coldwar(chars):
           "controller hints, country names, patch notes and font delta verified")
 
 def check_revised_text():
+    latest = read_json(GAMES/"coldwar/review-1.2.3.zh-CN.json")
+    proof = read_json(GAMES/"coldwar/proofread-1.2.3.json")
+    require(len(latest)+len(proof)>=67 and not latest.keys() & proof.keys(), "Incomplete or overlapping 1.2.3 text changes")
+    for key,entry in proof.items():
+        require(re.fullmatch(r"/\w+/\w+",key) and entry["source"] != entry["result"] and
+                all(re.fullmatch(r"[0-9a-f]{64}",entry[name]) for name in ("source","result")),
+                "Invalid text correction fingerprint")
+        require(entry["edits"] and all(isinstance(i,int) and i>=0 and a!=b and
+                isinstance(a,str) and isinstance(b,str) for i,a,b in entry["edits"]),"Invalid text correction")
+    for key,content in latest.items():
+        require(re.fullmatch(r"/\w+/\w+",key),"Invalid 1.2.3 key")
+        text_line(content)
+    tools = GAMES/"coldwar/runtime"
+    require(hashlib.sha256((tools/"mono.cecil.0.11.6.nupkg").read_bytes()).hexdigest() ==
+            "d2a23832aaa948ba9a01acc42b5726e34c5f995958f1b30d45c0e7c70b3a72d5", "Offline build package differs")
+    require("Permission is hereby granted" in (tools/"Mono.Cecil-LICENSE.txt").read_text("utf-8-sig"),"Missing license")
     links = read_json(GAMES / "coldwar/wiki_zh.json")
     for key, value in links.items():
         require(re.fullmatch(r"/(?:char_wiki_links|decision_wiki_links|doctrine_wiki_links|positions_wiki)/\w+", key),

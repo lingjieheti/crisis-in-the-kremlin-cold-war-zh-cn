@@ -6,6 +6,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import shutil
 import sys
 import tempfile
 import unittest
@@ -47,7 +48,8 @@ class PortableBackendTests(unittest.TestCase):
             return (updates7 if path.name == "game1257.zh-CN.json" else updates8).copy()
         with mock.object(patch,"OUTPUT_XML",hashes), mock.object(patch,"PLANETARIUM_XML",interim_sha), \
                 mock.object(patch,"GENERATIONS",(legacy_sha,interim_sha,latest_sha)), \
-                mock.object(patch,"legacy_text",return_value=legacy), mock.object(patch,"read_json",side_effect=load):
+                mock.object(patch,"legacy_text",return_value=legacy), mock.object(patch,"release_edits",side_effect=lambda raw:raw), \
+                mock.object(patch,"read_json",side_effect=load):
             self.assertEqual(patch.render_text(legacy,patch.PLANETARIUM_BUILD,interim),chinese7)
             for source in (legacy,chinese7,chinese8):
                 self.assertEqual(patch.render_text(source,patch.BUILD,latest),chinese8)
@@ -194,7 +196,7 @@ class RealUpgradeTests(unittest.TestCase):
         font_spec = importlib.util.spec_from_file_location("previous_coldwar_font", old_patch.with_name("font_patch.py"))
         previous.font_patch = importlib.util.module_from_spec(font_spec)
         font_spec.loader.exec_module(previous.font_patch)
-        self.assertIn(previous.RELEASE_XML, (patch.V1_2_XML, patch.LEGACY_XML))
+        self.assertIn(previous.RELEASE_XML, (patch.V1_2_XML, patch.V122_OUTPUT[patch.LEGACY_BUILD]))
         original = (game / font_patch.FILE).read_bytes()
         if patch.sha(original) == font_patch.PATCHED_SHA:
             backup = game_paths.user_data() / font_patch.CURRENT.backup
@@ -235,6 +237,15 @@ class RealUpgradeTests(unittest.TestCase):
             (game_copy / patch.RESOURCE).write_bytes((game / patch.RESOURCE).read_bytes())
             level = patch.RESOURCE.with_name("level3")
             (game_copy/level).write_bytes((game/level).read_bytes())
+            managed = patch.runtime_ui.FILE.parent
+            shutil.copytree(game/managed,game_copy/managed)
+            # The local player might already have v1.2.3. Start the fixture from
+            # the player's verified stock backup if that is the case.
+            assembly = game_copy/patch.runtime_ui.FILE
+            if patch.sha(assembly.read_bytes()) == patch.runtime_ui.ASSEMBLIES[patch.BUILD][1]:
+                backup = game_paths.user_data()/(".zhcn-original-assembly-"+patch.BUILD+".dll")
+                shutil.copyfile(backup,assembly)
+            patch.display_layout.manage(game_copy,patch.BUILD,"restore")
             patch.run(args)
             args.action = "verify"
             patch.run(args)

@@ -1,0 +1,156 @@
+{
+  "/endings_desc/ending18var438": {
+    "edits": [
+      [
+        10,
+        "的",
+        ""
+      ]
+    ],
+    "result": "2f32f1f9f912f5c293a5e60f112e13e063eb12137903aebb00900b1b4b1e1a2b",
+    "source": "f0f31f46490e11636c8ef71a3936f693b195c0e29cce34bbd7cfacb16580b09a"
+  },
+  "/endings_desc/ending18var61": {
+    "edits": [
+      [
+        50,
+        "的",
+        ""
+      ]
+    ],
+    "result": "198898f94fe2c6b06bd555d6df91304d12c0208b663ab59e878e5a347fef5c93",
+    "source": "76a8ecaebb8d4e128784986fe1e469551f21ce856d7c6a94b1d7965089a8a055"
+  },
+  "/events/events316Result1": {
+    "edits": [
+      [
+        201,
+        "的",
+        ""
+      ]
+    ],
+    "result": "4992b46ee2226f3d6ebee57a22a27892b903b72a265fe7eb89eb47abfc4ffbdf",
+    "source": "0f3e0a5638009330a80be396f6346d290d50e73776a184494785f12756832a06"
+  },
+  "/events/events320Result1": {
+    "edits": [
+      [
+        190,
+        "是",
+        ""
+      ]
+    ],
+    "result": "6c685d52a2131edd0907edc7b49ce0e9e3d4fea0624630211b1d8fd3c04828eb",
+    "source": "b8508f5f9049dfd77117affd73031e8c168a38fb3a68ade74cffbbb9e24ef25e"
+  },
+  "/events/events361Result0": {
+    "edits": [
+      [
+        413,
+        "的",
+        ""
+      ]
+    ],
+    "result": "dc69eeb7d4e3f05f0f2d7afb9dfe6dc32f2d50ff285fff0979060d7668406297",
+    "source": "e7434ee0e99060ed807cef9017962e647a3fd3495db76cd78dafea5ae545dd83"
+  },
+  "/events/events382Result1": {
+    "edits": [
+      [
+        164,
+        "的",
+        ""
+      ]
+    ],
+    "result": "dfd49cb1b40cd8e0647a5e17fee0f413bcb6c6a7bf5a67f17d6e64cab38a2415",
+    "source": "6f376eb841fe3c13406b6af7576080716625dcd4fbf3d9ae0b27ea8ab0380ded"
+  },
+  "/events/events385Result2": {
+    "edits": [
+      [
+        578,
+        "的",
+        ""
+      ]
+    ],
+    "result": "7bd309a1e52d1393f919481c61f1462e5a9fa8c53b5fc2d094ee69bb7140cdee",
+    "source": "65c884beba655e615db397fa1c37a5b24d05d0b39391f76000170bb5a7b9e16c"
+  },
+  "/events/events390Desc": {
+    "edits": [
+      [
+        440,
+        "的",
+        ""
+      ]
+    ],
+    "result": "dc8013afff6f3a3e2426d0d21f401c2fcbc5165d212758a6c50101e0a60d00d8",
+    "source": "f3d792927b707816b4076056848af51ff3644264b1b6fddf619d8cdd8bb24824"
+  },
+  "/events/events429Desc": {
+    "edits": [
+      [
+        410,
+        "的",
+        ""
+      ]
+    ],
+    "result": "ab15747c2b1cb30f9f9bf8fcfb1966daffefca308a29461c85511b86448c4fff",
+    "source": "442e37981e01cfca24bab6437c3241ecb5ffcc1b8f5916ffa899a5aa5c82c9b3"
+  },
+  "/events/events457Result0": {
+    "edits": [
+      [
+        168,
+        "则",
+        ""
+      ]
+    ],
+    "result": "82590033556ae49e2c58c4b08a0a4fc1afd80113b9949db0292711c14d05a01d",
+    "source": "b7d6bb37a958c7168bcf48f69ab65a93b1ef6503feb8a115741d0d550df55979"
+  },
+  "/events/events70Adds6": {
+    "edits": [
+      [
+        40,
+        "的",
+        ""
+      ]
+    ],
+    "result": "76f62369dd921d59c21ec4c1472adc109d4803f73708645e06eba35c0ab1b01b",
+    "source": "c232819ff082d3181b3692d3c747bf43507cb09309d27632d388787d9411dffd"
+  },
+  "/tutorial/part34": {
+    "edits": [
+      [
+        44,
+        "的",
+        ""
+      ]
+    ],
+    "result": "bb4df907875786be9538136ab424e8d46a1af0281668c100fa3d8e7c951e6fd4",
+    "source": "8cbc1a99763e1d4be4c2f3519b530f48597340d5880667778e1ac98eaf48f1e8"
+  },
+  "/tutorial/part46": {
+    "edits": [
+      [
+        7,
+        "了",
+        ""
+      ]
+    ],
+    "result": "906cc14bbb835d8a855fa27c083a26054dcf43e3dde622f574250904f7b5605a",
+    "source": "2cd768d1ad04c07dfd72c7629adce60cf172fcb9c9a5dc1208b88aff077ec939"
+  },
+  "/tutorial/part82": {
+    "edits": [
+      [
+        62,
+        "的",
+        ""
+      ]
+    ],
+    "result": "4d46e59a5576936a41ff3e843aaf203b80524b268dddd7ed2eebe6de84f70b0b",
+    "source": "93dec302a25e2a470123ebdbae02d585b675ec76d4e87f4ee992e85af5c4454c"
+  }
+}
