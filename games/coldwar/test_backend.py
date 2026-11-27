@@ -43,7 +43,7 @@ class PortableBackendTests(unittest.TestCase):
         chinese7 = patch.merge_language(interim, legacy, updates7)
         chinese8 = patch.merge_language(latest, chinese7, updates8)
         legacy_sha, interim_sha, latest_sha = (patch.sha(blob) for blob in (legacy, chinese7, chinese8))
-        hashes = {patch.LEGACY_BUILD:legacy_sha, patch.PLANETARIUM_BUILD:interim_sha, patch.BUILD:latest_sha}
+        hashes = {patch.LEGACY_BUILD:legacy_sha, patch.PLANETARIUM_BUILD:interim_sha, patch.ECONOMY_BUILD:latest_sha}
         def load(path):
             return (updates7 if path.name == "game1257.zh-CN.json" else updates8).copy()
         with mock.object(patch,"OUTPUT_XML",hashes), mock.object(patch,"PLANETARIUM_XML",interim_sha), \
@@ -52,10 +52,25 @@ class PortableBackendTests(unittest.TestCase):
                 mock.object(patch,"read_json",side_effect=load):
             self.assertEqual(patch.render_text(legacy,patch.PLANETARIUM_BUILD,interim),chinese7)
             for source in (legacy,chinese7,chinese8):
-                self.assertEqual(patch.render_text(source,patch.BUILD,latest),chinese8)
+                self.assertEqual(patch.render_text(source,patch.ECONOMY_BUILD,latest),chinese8)
             self.assertEqual(audit.tree_layout(chinese8),audit.tree_layout(latest))
             with self.assertRaisesRegex(ValueError,"还原汉化"):
                 patch.render_text(chinese8,patch.PLANETARIUM_BUILD,interim)
+
+    def test_latest_hotfix_from_previous_release_or_original(self):
+        base = b"<root><section><name>base</name></section></root>"
+        old = b"<root><section><name>previous</name></section></root>"
+        new_source = b"<root><section><name>name</name><added>added</added></section></root>"
+        edits = {"/section/name":"新译", "/section/added":"新增"}
+        expected = patch.merge_language(new_source,old,edits)
+        old_sha,new_sha = patch.sha(old),patch.sha(expected)
+        def read(path):
+            return edits.copy() if path.name == "build26977018.zh-CN.json" else {}
+        with mock.object(patch,"read_json",side_effect=read), mock.object(patch,"ECONOMY_XML",old_sha), \
+                mock.object(patch,"GENERATIONS",(old_sha,new_sha)), mock.dict(patch.OUTPUT_XML,{patch.BUILD:new_sha}), \
+                mock.object(patch,"legacy_text",return_value=base), mock.object(patch,"release_edits",side_effect=lambda xml:xml):
+            for source in (base,old,expected):
+                self.assertEqual(patch.render_text(source,patch.BUILD,new_source),expected)
 
     def test_merge_uses_current_tree_indexed_leaves_and_new_attributes(self):
         old = b'<t><s><slot id="old">a</slot><slot>b</slot><obsolete>x</obsolete></s></t>'
@@ -239,6 +254,9 @@ class RealUpgradeTests(unittest.TestCase):
             (game_copy/level).write_bytes((game/level).read_bytes())
             managed = patch.runtime_ui.FILE.parent
             shutil.copytree(game/managed,game_copy/managed)
+            signature = patch.runtime_ui.SIGNATURE
+            (game_copy/signature).parent.mkdir(parents=True,exist_ok=True)
+            shutil.copyfile(game/signature,game_copy/signature)
             # The local player might already have v1.2.3. Start the fixture from
             # the player's verified stock backup if that is the case.
             assembly = game_copy/patch.runtime_ui.FILE

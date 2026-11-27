@@ -7,11 +7,11 @@ import struct
 import tempfile
 from typing import NamedTuple
 
-ASSET_SHA = "98cb77fc3fa197e58ef69cf9c947dc0d52685fcb32b34fe68f0a8c238f968636"
+ASSET_SHA = "73654c0044503891f33db266a7d151526e0794745149f51288c7fad0c21e4491"
 FONT_SHA = "2f2cee5fbb2403df352ca2005247f6c4faa70f3086ebd31b6c62308b5f2f9865"
 NEW_FONT_SHA = "451d556e01e42cab95ad3beba0d5c5ca1f6639662272e59e6b177ae94d3f663e"
 DELTA_SHA = "92a47e1493caa64e54b96299689cd9329091b47d602f468b525c214a3236efa7"
-PATCHED_SHA = "9a56ef96532edba1f0746da8f37ee30290ec1e1c7ca67b2e9b4cc976f20a2772"
+PATCHED_SHA = "2b64085e01d85b540a4b441a122213bb8c6ffbf0407548a118e29b573416b470"
 RAW_START = 13724120
 FONT_SIZE = 15515760
 OBJECT_START = 13724024
@@ -29,7 +29,10 @@ class AssetLayout(NamedTuple):
 
 
 CURRENT = AssetLayout(ASSET_SHA, PATCHED_SHA, DATA_START, OBJECT_START,
-                      ".zhcn-original-sharedassets0-26955082.assets")
+                      ".zhcn-original-sharedassets0-26977018.assets")
+ECONOMY = AssetLayout("98cb77fc3fa197e58ef69cf9c947dc0d52685fcb32b34fe68f0a8c238f968636",
+                      "9a56ef96532edba1f0746da8f37ee30290ec1e1c7ca67b2e9b4cc976f20a2772",
+                      21872, 13724024, ".zhcn-original-sharedassets0-26955082.assets")
 INTERIM = AssetLayout("a576c46e61b2bdd7d9f6c2408d3e0d300da1cfd6dc066d97fc1dae0a5147650a",
                       "58cea05ac2ea84b753c66516fc062080e7cc87a97a0064f3720257ffa9b33df3",
                       21600, 13723752,
@@ -39,7 +42,7 @@ PREVIOUS = AssetLayout("1a60905fd2166bd95ed1378f97b687c1611ecafcb880cc8ab09783e3
                        20480, 13721160, ".zhcn-original-sharedassets0.assets")
 
 def asset_layout(checksum):
-    for layout in (CURRENT, INTERIM, PREVIOUS):
+    for layout in (CURRENT, ECONOMY, INTERIM, PREVIOUS):
         if checksum in (layout.original, layout.patched):
             return layout
     raise ValueError("当前游戏字体资源与已适配的 Steam 构建不符。")

@@ -157,7 +157,7 @@ def main(args):
     base = leaves((args.base / "text.xml").read_bytes())
     patch.ensure(build == ru_build and en.keys() == ru.keys(), "两份原版语言的构建或键集合不同。")
     expected = {patch.LEGACY_BUILD:(0,0,18133), patch.PLANETARIUM_BUILD:(1338,8,19463),
-                patch.BUILD:(1501,10,19624)}[build]
+                patch.ECONOMY_BUILD:(1501,10,19624), patch.BUILD:(1508,10,19631)}[build]
     patch.ensure((len(en.keys()-base.keys()),len(base.keys()-en.keys()),len(en)) == expected,
                  "原版与工坊文本的新增、删除或现有项数不符。")
     if args.compare_xml:

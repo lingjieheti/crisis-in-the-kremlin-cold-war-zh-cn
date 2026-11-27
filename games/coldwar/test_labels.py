@@ -68,15 +68,17 @@ class DisplayLabels(unittest.TestCase):
         reference = b"official fixture"
         retired = b"released v1.2.3 fixture"
         checks = (patch.sha(reference), patch.sha(retired))
-        for build in patch.OUTPUT_XML:
-            with self.subTest(build=build), tempfile.TemporaryDirectory() as tmp, mock.dict(runtime_ui.ASSEMBLIES,{build:checks}):
+        for build in patch.V123_OUTPUT:
+            with self.subTest(build=build), tempfile.TemporaryDirectory() as tmp, mock.dict(runtime_ui.ASSEMBLIES,{build:checks}), \
+                    mock.dict(runtime_ui.SIGNATURES,{build:patch.sha(b"unaltered signature sentinel")}):
                 profile = Path(tmp)
                 game = profile/"game"
                 path = game/runtime_ui.FILE
                 path.parent.mkdir(parents=True)
                 path.write_bytes(retired)
                 backup = profile/(".zhcn-original-assembly-"+build+".dll")
-                sig=game/"build.sig"
+                sig=game/runtime_ui.SIGNATURE
+                sig.parent.mkdir(parents=True)
                 sig.write_bytes(b"unaltered signature sentinel")
                 for bad in (None,b"modified backup"):
                     if bad:backup.write_bytes(bad)
@@ -97,6 +99,25 @@ class DisplayLabels(unittest.TestCase):
                 backup.write_bytes(b"unknown user backup")
                 runtime_ui.manage(game,profile,build,"install")
                 self.assertEqual(backup.read_bytes(),b"unknown user backup")
+
+    def test_new_build_requires_both_official_files_and_writes_neither(self):
+        build = patch.BUILD
+        with tempfile.TemporaryDirectory() as tmp, mock.dict(runtime_ui.ASSEMBLIES,{build:(patch.sha(b"official"),None)}), \
+                mock.dict(runtime_ui.SIGNATURES,{build:patch.sha(b"signature")}):
+            profile = Path(tmp)
+            assembly, signature = profile/runtime_ui.FILE, profile/runtime_ui.SIGNATURE
+            for file,value in ((assembly,b"official"),(signature,b"unexpected")):
+                file.parent.mkdir(parents=True,exist_ok=True)
+                file.write_bytes(value)
+            for action in ("preflight","install","verify","restore"):
+                with self.assertRaisesRegex(ValueError,"签名"):
+                    runtime_ui.manage(profile,profile,build,action)
+            self.assertEqual(signature.read_bytes(),b"unexpected")
+            signature.write_bytes(b"signature")
+            times = [p.stat().st_mtime_ns for p in (assembly,signature)]
+            for action in ("install","verify","restore"):
+                runtime_ui.manage(profile,profile,build,action)
+            self.assertEqual(times,[p.stat().st_mtime_ns for p in (assembly,signature)])
 
 if __name__ == "__main__":
     unittest.main()

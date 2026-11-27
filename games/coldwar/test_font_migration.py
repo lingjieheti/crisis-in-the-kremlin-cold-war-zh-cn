@@ -48,7 +48,7 @@ class FontMigration(unittest.TestCase):
 
     @unittest.skipUnless(os.environ.get('COLDWAR_TEST_GAME'), 'set COLDWAR_TEST_GAME to the newest Steam copy')
     def test_new_resolution_selector(self):
-        self.check_real_display_settings(os.environ['COLDWAR_TEST_GAME'], '26955082')
+        self.check_real_display_settings(os.environ['COLDWAR_TEST_GAME'], '26977018')
 
     @unittest.skipUnless(os.environ.get('COLDWAR_TEST_INTERIM_GAME'), 'set COLDWAR_TEST_INTERIM_GAME to the intermediate Steam copy')
     def test_intermediate_resolution_selector(self):

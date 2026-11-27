@@ -28,12 +28,17 @@ MOD = "zhcn-coldwar-local"
 ORIGINAL_ID = "114514"
 ITEM = "3523398274"
 GAME = "1922740"
-BUILD = "26955082"
+BUILD = "26977018"
+ECONOMY_BUILD = "26955082"
 PLANETARIUM_BUILD = "26891377"
 LEGACY_BUILD = "26243566"
 RESOURCE = Path("CrisisInTheKremlin2_Data/resources.assets")
 LANGUAGES = {
     BUILD: {
+        "en": (8212652, 4054034, "67e4382b30ab5853e491c511601158d44589c15e1a776fb942f28a844b9b91d2"),
+        "ru": (1351596, 6320819, "b12dcf10aedff377921f0869e981ba688c2576c8277f3c6d14e03d1a1f4da74f"),
+    },
+    ECONOMY_BUILD: {
         "en": (8211228, 4053021, "b4f7363fa7af7e91aed306fd429cb4760dbd6ad9002c9e1bb91cddd7f452009f"),
         "ru": (1351596, 6319392, "8f815a0a80e0eece31c7521b5f3f702cefb54cbccf9a91eecb457dcb198234cb"),
     },
@@ -52,20 +57,21 @@ V1_2_XML = "1936bf8b50353cbf81bd7b64616bc372e259465bbbc9fcc73e02d2719ede31aa"
 V122_OUTPUT = {
     LEGACY_BUILD: "9b52edb3378c45b98beab0cfdc2ec45cc43d59bf332bd3cceb10d30fcc4bf2a1",
     PLANETARIUM_BUILD: "8c16176ddc23fcd38b02c675c52db9751b020d6433a8d056a8ff0bad2249f99b",
-    BUILD: "4ee66202a495c8fd187f5c410267fe1f2fe7f3c701ac2127d48cb0358bdc4596",
+    ECONOMY_BUILD: "4ee66202a495c8fd187f5c410267fe1f2fe7f3c701ac2127d48cb0358bdc4596",
 }
 V123_OUTPUT = {
     LEGACY_BUILD: "725cd507a6bbade071a71cd110893abe0153a6cfd22cd40c0f7d5021be8aaded",
     PLANETARIUM_BUILD: "49b3fc76a698bf3724cc6dacf05e2f7f7ceb7af892f7ac2d400a2482e51edbb3",
-    BUILD: "0547e7b6eabbe6d5c9b1cf90d6ad19ab140178e3d8b4e23bd632bfb5ce7618d5",
+    ECONOMY_BUILD: "0547e7b6eabbe6d5c9b1cf90d6ad19ab140178e3d8b4e23bd632bfb5ce7618d5",
 }
 LEGACY_XML = "35d22fb940414f1b27c14734684f030c93d9b1b4f60a4bf344d82699586c8a5e"
 PLANETARIUM_XML = "26920b91549bf9d8f025c7da05a26c6d6a7d8a118b886d9c306c55df9ed2cda1"
-RELEASE_XML = "bcd572c7a596ff388840336d6cadc59e8afff44bb970b70acb77cd7925919dce"
+RELEASE_XML = "18648adc8d6f4c405a8320cc89efe78bad3f1e702dafadcef830462d50bcf820"
+ECONOMY_XML = "bcd572c7a596ff388840336d6cadc59e8afff44bb970b70acb77cd7925919dce"
 GENERATIONS = (V1_XML, V1_2_XML, V122_OUTPUT[LEGACY_BUILD], V123_OUTPUT[LEGACY_BUILD], LEGACY_XML,
                V122_OUTPUT[PLANETARIUM_BUILD], V123_OUTPUT[PLANETARIUM_BUILD], PLANETARIUM_XML,
-               V122_OUTPUT[BUILD], V123_OUTPUT[BUILD], RELEASE_XML)
-OUTPUT_XML = {BUILD: RELEASE_XML, PLANETARIUM_BUILD: PLANETARIUM_XML, LEGACY_BUILD: LEGACY_XML}
+               V122_OUTPUT[ECONOMY_BUILD], V123_OUTPUT[ECONOMY_BUILD], ECONOMY_XML, RELEASE_XML)
+OUTPUT_XML = {BUILD: RELEASE_XML, ECONOMY_BUILD: ECONOMY_XML, PLANETARIUM_BUILD: PLANETARIUM_XML, LEGACY_BUILD: LEGACY_XML}
 HOTFIX_REMOVED = {"/system/save_resolution_question", "/ui/apply"}
 REGKEY = r"Software\Nostalgames\CrisisInTheKremlin2"
 PREF = "modsPrefsList_h752420768"
@@ -104,7 +110,8 @@ def language_data(game=None, language="en"):
     raise ValueError("不支持此版本的游戏语言资源。支持的 Steam 构建为 " + " 和 ".join(LANGUAGES) + "。")
 
 def check_font_build(asset, build):
-    expected = {LEGACY_BUILD:font_patch.PREVIOUS, PLANETARIUM_BUILD:font_patch.INTERIM, BUILD:font_patch.CURRENT}
+    expected = {LEGACY_BUILD:font_patch.PREVIOUS, PLANETARIUM_BUILD:font_patch.INTERIM,
+                ECONOMY_BUILD:font_patch.ECONOMY, BUILD:font_patch.CURRENT}
     with asset.open("rb") as stream:
         digest = hashlib.file_digest(stream, "sha256").hexdigest()
     ensure(font_patch.asset_layout(digest) == expected[build],
@@ -222,22 +229,34 @@ def render_text(xml, build=LEGACY_BUILD, english=None):
     if current in GENERATIONS:
         ensure(GENERATIONS.index(current) < GENERATIONS.index(expected),
                "这是较新游戏构建的汉化；切回旧版游戏时，请先还原汉化，再安装对应版本。")
-    if current in (V122_OUTPUT[build], V123_OUTPUT[build]):
+    if current in (V122_OUTPUT.get(build), V123_OUTPUT.get(build)):
         result = xml
     elif build == LEGACY_BUILD:
         result = legacy_text(xml)
     else:
         ensure(english is not None, "缺少当前构建的英文语言资源。")
-        if current in (V122_OUTPUT[PLANETARIUM_BUILD], V123_OUTPUT[PLANETARIUM_BUILD], PLANETARIUM_XML):
+        from_economy = current in (V122_OUTPUT[ECONOMY_BUILD], V123_OUTPUT[ECONOMY_BUILD], ECONOMY_XML)
+        if from_economy or current in (V122_OUTPUT[PLANETARIUM_BUILD], V123_OUTPUT[PLANETARIUM_BUILD], PLANETARIUM_XML):
             source = xml
             updates = {}
         else:
             source = xml if current in (V123_OUTPUT[LEGACY_BUILD], LEGACY_XML) else legacy_text(xml)
             updates = read_json(HERE / "game1257.zh-CN.json")
-        if build == BUILD:
+        if build in (ECONOMY_BUILD, BUILD) and not from_economy:
             for key in HOTFIX_REMOVED:
                 updates.pop(key, None)
             updates.update(read_json(HERE / "game1258.zh-CN.json"))
+        if build == BUILD:
+            latest = read_json(HERE / "build26977018.zh-CN.json")
+            key = "/patchnotes/patch_1_2_5_7_text"
+            correction = latest.get(key)
+            if isinstance(correction, dict):
+                original_notes = read_json(HERE / "game1258.zh-CN.json")[key].split("|")
+                line = correction["remove_line"]
+                ensure(original_notes.count(line) == 1, "历史更新说明的待删条目不唯一。")
+                original_notes.remove(line)
+                latest[key] = "|".join(original_notes)
+            updates.update(latest)
         result = merge_language(english, source, updates)
     result = release_edits(result)
     ensure(sha(result) == expected, "生成的本版中文指纹不符。")

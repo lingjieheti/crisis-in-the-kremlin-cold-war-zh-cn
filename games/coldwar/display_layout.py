@@ -9,6 +9,9 @@ FILE = "CrisisInTheKremlin2_Data/level3"
 # Canvas/Back/ScreenSettings/Scroll View/Viewport/Content/Text (0)/Selector/Selected.
 # Unity serializes the same TMP fields at the same local offsets in these two releases.
 SCENES = {
+    "26977018": (178744,
+                 "d9b62f856f40986b4fd3d29ad2e88158a034b39125a451247f919c1bf48e99ab",
+                 "0d2f069df5c2af07441208e2cee74b99d891fca3e4834e429e19adef7ecfd8bd"),
     "26891377": (174008,
                  "667080c08a37f81e423a90322cc427d4ab91a8e88178e53882e385632630ee94",
                  "e9a7127bf38b563811dc01f787133b77d0e91b81b5452b9677b513dc9faec822"),

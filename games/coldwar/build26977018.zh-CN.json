@@ -1,0 +1,19 @@
+{
+  "/leader_type_name/shift_note": "{0}的领导方针偏离“忠诚”的幅度为{1}。这一偏移逐月减小，影响结束时归零。",
+  "/notifications_descs/notification31_addition_projected": "若投票前形势不变，预计选举实力占比如下（仅计领先的三个政党）：",
+  "/notifications_descs/notification31_poll_note": "以上是目前的形势，投票前仍可能有变。",
+  "/notifications_descs/notification31_vote_receivers": "我方支持的政党未进前三，其支持者的选票将转投{0}。",
+  "/notifications_descs/notification31_vote_receivers_many": "我方支持的政党未进前三，其支持者的选票将转投立场最接近的政党：{0}。",
+  "/pseudoModificator/modif312": "乌克兰自由选举",
+  "/icon_desc/icon70guard": "投票时，该西欧国家的执政党将挽回此前受压时损失的实力，挽回比例为{0}。留在西方阵营的西欧国家越多、北约越稳固、美国国内局势越平稳，执政党挽回的实力就越多。",
+  "/events/events164Result1var0": "@{0}领导层作出让步，同意在乌克兰举行自由选举。支持中央的势力胜选，重申乌克兰将继续留在{0}。",
+  "/events/events164Result1var1": "@{0}领导层作出让步，同意在乌克兰举行自由选举。温和派获胜，重申乌克兰将留在{0}，并吸纳几名立场较温和的反对派人士进入共和国领导层。",
+  "/events/events164Result1var2": "@{0}领导层作出让步，同意在乌克兰举行自由选举。主张独立的势力获胜，基辅民众纷纷上街庆祝。新政府宣布启动乌克兰与{0}的“天鹅绒分离”程序，并着手起草主权宣言。",
+  "/patchnotes/patch_1_2_5_7_text": {
+    "remove_line": "<b></b>转入多党制后不会立即再次选举议会，下一次选举在两年后举行。"
+  },
+  "/notifications_descs/notification31": "{0}：{1}|领先：{2}|",
+  "/notifications_descs/notification31_addition": "选举实力占比（仅计领先的三个政党）：",
+  "/notifications_descs/notification31_addition_2": "若我方支持的政党实力太弱，其选举权重可能转给实力更强、立场与之最接近的政党。",
+  "/notifications_descs/notification31_finished_addition": "最终选举实力占比（仅计领先的三个政党）："
+}

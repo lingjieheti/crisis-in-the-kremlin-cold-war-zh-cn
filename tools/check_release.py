@@ -107,6 +107,20 @@ def check_revised_text():
         require(re.fullmatch(r"/\w+/\w+",key),"Invalid 1.2.3 key")
         text_line(content)
     folder = GAMES / "coldwar"
+    update = read_json(folder / "build26977018.zh-CN.json")
+    required = {"/leader_type_name/shift_note", "/notifications_descs/notification31_vote_receivers",
+                "/notifications_descs/notification31_vote_receivers_many", "/pseudoModificator/modif312",
+                "/icon_desc/icon70guard", "/notifications_descs/notification31_poll_note",
+                "/notifications_descs/notification31_addition_projected"}
+    require(required <= update.keys(), "26977018 new game text is incomplete")
+    for key, value in update.items():
+        require(re.fullmatch(r"/\w+/\w+",key), "Invalid 26977018 translation path")
+        if key == "/patchnotes/patch_1_2_5_7_text":
+            previous = read_json(folder / "game1258.zh-CN.json")[key].split("|")
+            require(set(value) == {"remove_line"} and previous.count(value["remove_line"]) == 1,
+                    "Invalid 26977018 historical patch note")
+        else:
+            text_line(value)
     require(not any((folder / "runtime").glob("*")), "Retired assembly builder is present")
     require(not any(folder.rglob("*.nupkg")) and not any(folder.rglob("*.dll")),
             "Resource-only patch must not ship an assembly or a package to rewrite one")
