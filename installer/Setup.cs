@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 [assembly: AssemblyTitle("克里姆林宫危机：冷战 简体中文汉化补丁")]
 [assembly: AssemblyProduct("克里姆林宫危机：冷战 简体中文汉化补丁")]
-[assembly: AssemblyVersion("1.2.5.0")]
+[assembly: AssemblyVersion("1.2.6.0")]
 
 internal sealed class Payload : IDisposable
 {
@@ -143,7 +143,7 @@ internal sealed class Installer : Form
             Text = "克里姆林宫危机：冷战", AutoSize = true, Anchor = AnchorStyles.Left,
             Font = new Font(Font.FontFamily, 16, FontStyle.Bold)
         };
-        version.Text = "汉化 v1.2.5　·　支持游戏 1.2.5.6 – 1.2.5.8";
+        version.Text = "汉化 v1.2.6　·　支持游戏 1.2.5.6 – 1.2.5.8";
         version.AutoSize = true;
         version.Anchor = AnchorStyles.Left;
         panel.Controls.Add(title,0,0); panel.SetColumnSpan(title,2);
@@ -212,7 +212,7 @@ internal sealed class Installer : Form
             });
             game = found.Item1;
             path.Text = game;
-            version.Text = "汉化 v1.2.5　·　本机 " +
+            version.Text = "汉化 v1.2.6　·　本机 " +
                            (found.Item2 == "unknown" ? "未读到构建号" : found.Item2);
             status.Text = found.Item2 != "unknown" && found.Item2 != "26977018" && found.Item2 != "26955082" && found.Item2 != "26891377" && found.Item2 != "26243566"
                 ? "游戏构建与适配版本不同。安装前会核对文件，请留意兼容性提示。"

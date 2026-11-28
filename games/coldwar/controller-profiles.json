@@ -1,0 +1,38 @@
+{
+  "controller_generic.vdf": [
+    "c9896a175b6d8905490535f9452101896e30f50d46c6b0524fd78757de2fa72e",
+    "7e71e0c886e8d589c0d95835b4685bef262d54c27af3c8bc29096d3262a27f26"
+  ],
+  "controller_neptune.vdf": [
+    "19d86ff2bcb561163b99e0063e6670138f0086e55272ef6f92237ce490c217df",
+    "334fa30e02519e86372ed7926b2da2c0320e5f0f85aae50b8413c80ff70a1003"
+  ],
+  "controller_ps4.vdf": [
+    "85b51196c70fffcc3eb9e046d47dc3d4c2ad75766a248e9c2cd4b75c025e4e5f",
+    "3805808515a3de1246b082b05389d2dc25a5feb7153c491b444d4558d8cab667"
+  ],
+  "controller_ps5.vdf": [
+    "a140fdced7b6cbf54d1ee4127fe6918edf56acc8e62f767062c1bef66019afc8",
+    "715be006318dc8c7d4d7b6640494f8204225743a68555dc088f7b56f59447d36"
+  ],
+  "controller_switch_pro.vdf": [
+    "ca148b29168244a33c86abd5e6a316a1c42fd5cda0ae5ce881dcdc98073b38f6",
+    "3c93eb98a9c326ffe7e633e546c7086b0363f0968825d9dbfd9809705d2ae2c7"
+  ],
+  "controller_xbox360.vdf": [
+    "da8d606b5f4a3d359134298a0166826cff8d355246980edf1f4df4f0910f62ca",
+    "7b395f0fb819d4df707889702756e8f68f8b15c5e52f58356fa69c07fd766a4c"
+  ],
+  "controller_xboxelite.vdf": [
+    "96ec089bef5a1859c1656fbab368f797d6a96536aabaa3d04e1750b1dc5a3f33",
+    "4b9482a722f712689c59d85cde701aea3b53a8dc3da3bd505defa8c5b7a25aa9"
+  ],
+  "controller_xboxone.vdf": [
+    "9b83d6dd846cc8a0afda62195ea7cf6f2804c9015a35165994813a8148b63d38",
+    "8f559d4ad8d755fccc0185ea12b75a7ea1956986cad13c71fd3957c96af4446e"
+  ],
+  "steam_input_manifest.vdf": [
+    "b69af1c0480bd37f5843fc0a9bf709a4eb0a815a72aba2501b1d6bf436855016",
+    "ca6af4ccf89739671dad8adc2d1ebaf2f185d2438d753997b7e8bfcba059512d"
+  ]
+}

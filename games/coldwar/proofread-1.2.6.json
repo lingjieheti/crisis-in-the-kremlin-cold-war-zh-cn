@@ -1,0 +1,1762 @@
+{
+  "/event_document_desc/personally": {
+    "source": "2beee4265e5e1216b9a22b572fcf06805be19d73f03a6c2c63537f107452ddaa",
+    "result": "44db436307fbcd5721f6cc65119927b311c981aed0ac1b0ecdb9f820f91b9b4c",
+    "edits": [
+      [
+        0,
+        "私",
+        "仅限本"
+      ],
+      [
+        2,
+        "信件",
+        "亲阅"
+      ]
+    ]
+  },
+  "/tutorial/part49": {
+    "source": "15dde1a7b580a494d1c72ce3e1f610b0816157c922c6f8a5150033bb8bfe38a8",
+    "result": "d5fe74036da09917b8e590895e65107bc050e0387d7ab7f0c4fe7eda73c57fa7",
+    "edits": [
+      [
+        0,
+        "请前往其他",
+        "任"
+      ],
+      [
+        6,
+        "项卡继续学习",
+        "一个栏目，查看详细说明"
+      ]
+    ]
+  },
+  "/diplomacy_country_icons/free_trade": {
+    "source": "d3a3c5f23dd697d2edf06f61d3cab77f88fe383525f449e9547fb26d179f1235",
+    "result": "da71bac16f44c6b5b23fc5ad42ed8f45c38f6ef6f1246af01d70234d9a36e53d",
+    "edits": [
+      [
+        4,
+        "由",
+        ""
+      ],
+      [
+        6,
+        "易",
+        ""
+      ]
+    ]
+  },
+  "/statistic_values_descs/FearLevel": {
+    "source": "56bea3f6aeb6ab611d96939187133aa74a711692b855df662421d8774ac07d8b",
+    "result": "c75c389c7e013f5e4eedf4b43b70a6094b939feaa479144928190e84d204c605",
+    "edits": [
+      [
+        343,
+        "恐",
+        "畏"
+      ]
+    ]
+  },
+  "/pseudoModificator/modif175": {
+    "source": "442f8eda6aab857a137943ff06a3a4ed0e8e740ea688679731636e8f645033a1",
+    "result": "41144d3ceb90ea12c0b49e905a0005fe686e34f6e450e15f76f8bd7b4f3af7d0",
+    "edits": [
+      [
+        0,
+        "用借壳上市方式重提柯西金",
+        "以新的名义恢复"
+      ]
+    ]
+  },
+  "/pseudoModificator/modif269var0": {
+    "source": "ac2cef5fc934bf829789464a27691e60b1dd36cf089e49c4401de36349724a21",
+    "result": "2959bab5c8fd74b7fccfdbecb1cbe18b194b1dd5df66015bc54bbd492aa89579",
+    "edits": [
+      [
+        0,
+        "平反",
+        "为"
+      ],
+      [
+        5,
+        "帮",
+        "派平反"
+      ],
+      [
+        7,
+        "只限",
+        ""
+      ],
+      [
+        12,
+        "",
+        "一翼"
+      ]
+    ]
+  },
+  "/pseudoModificator/modif269var1": {
+    "source": "73b752672a4e8f6837fb6c34185764c6a77dfcd3d533923a606f0543cffbacb5",
+    "result": "95dcaf43567c48a99d5c3e008671ddfee41f77bd2537b31083595d2983b198a8",
+    "edits": [
+      [
+        0,
+        "平反",
+        "为"
+      ],
+      [
+        5,
+        "帮",
+        "派平反"
+      ],
+      [
+        7,
+        "只限",
+        ""
+      ],
+      [
+        10,
+        "",
+        "大林"
+      ],
+      [
+        11,
+        "",
+        "一翼"
+      ]
+    ]
+  },
+  "/pseudoModificator/modif269var2": {
+    "source": "422e8c6cb08c16b005696e79a1d63e49d8896c567d6eadb640b0557bd2cd6b0b",
+    "result": "01924f7b18c5075c35f7a8629aa86c4d01717ebe0620ccf84646941dd6e57b21",
+    "edits": [
+      [
+        0,
+        "平反",
+        "为"
+      ],
+      [
+        5,
+        "帮",
+        "派平反"
+      ],
+      [
+        7,
+        "所有人",
+        "整个派别"
+      ]
+    ]
+  },
+  "/endings_desc/ending18var438": {
+    "source": "2f32f1f9f912f5c293a5e60f112e13e063eb12137903aebb00900b1b4b1e1a2b",
+    "result": "2a6e33d14c3c17efae05a81fb293136be18884f5ab63901edd6ac6d8a5f44329",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/endings_desc/ending18var150": {
+    "source": "ea86ce330389e9fed14cd7d603cdc2e4ec73f1af6c33903126283cdfeeb8a50d",
+    "result": "0b939665e5adc08903b813c5eb0abc6edb07356151b0d088ed6354a7be5220e8",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/endings_desc/ending18var151": {
+    "source": "d2115b688216af9b65c3cd784598f70ba9cbbd0e4e13768d8f25d5b7e91f8a80",
+    "result": "16dfb212b75be9b5344355db127d4149e5e46008a81524c8016856425a403758",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/endings_desc/ending18var152": {
+    "source": "b3764f6302d116a2d47265ac16e23b948518f3cd97da0555072e169996b03a2d",
+    "result": "aa2dcde601c51a18ac77cb7c77fda6ac36e7c69bbf49dd667a51a325294edf63",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/endings_desc/ending18var153": {
+    "source": "f7ba3f66b3dcd9b511bfe4b87b64d2b4fd97e44eb0a036fdea780a5dab2ff28d",
+    "result": "733ab322f364eb9a09180d7c31148cc19bfeef61ac7c93138157c24c83e4efcb",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/endings_desc/ending18var154": {
+    "source": "cc9712f9c3e8e8643e0b0cd90f8bb28240c4f8b77c64b6d18d6fbad5cb969029",
+    "result": "a37478e740c38b67a25d2b715cc6ea28dda8c20518953b27c695422fe37f301e",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/endings_desc/ending18var200": {
+    "source": "ae62571d00b3f4f15c594d742b139df61d9f49cba01b8ee9aadcda31be6be9af",
+    "result": "4b235201d456a901d21eec0155571c26d09f0d69cf4ee377612c852b8281d63c",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/endings_desc/ending18var444": {
+    "source": "df99d55da30f4b265bd284c054531a4540c0ff05c244346db271a2acf35dc017",
+    "result": "51371b30e5ec94f9f9779f3a0be1dfdeb9aa2ddc76134a4cc9832118431ef3a9",
+    "edits": [
+      [
+        54,
+        "",
+        "@"
+      ],
+      [
+        152,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/doctrines_window/comeconDoctrineBuff": {
+    "source": "34c27aaf23198e1423c13eb7244feab6f0d93f818359bb9a855b119dbc2fb230",
+    "result": "a33ece72511a9acb1754181c2c5ba4bf1e3525ece1a20ed5ad5719d52e0bb950",
+    "edits": [
+      [
+        3,
+        "",
+        "成员"
+      ],
+      [
+        9,
+        "增加",
+        "乘以"
+      ],
+      [
+        14,
+        "倍",
+        ""
+      ]
+    ]
+  },
+  "/doctrine_variant_descs/var115": {
+    "source": "88d77f9fea6f71a5bf33f619efb3fe4e6646a1115a96a9cb4d08a12aa8fe25f5",
+    "result": "3c5c59815c27eea5ded5dbfb35666f3037652fc9682a276eade78d2f7df14d55",
+    "edits": [
+      [
+        91,
+        "",
+        "|"
+      ],
+      [
+        103,
+        "",
+        "|"
+      ],
+      [
+        112,
+        "",
+        "|"
+      ]
+    ]
+  },
+  "/doctrine_variant_descs/var146": {
+    "source": "e2615dddf5ef580b0e76917610b88d6a7da77380e779b7c8bc37186f9c6af866",
+    "result": "15e950db55519ae6a0f4ee0d523d1aab42836e707065ed2b6e76625cb82344cf",
+    "edits": [
+      [
+        89,
+        "|",
+        ""
+      ]
+    ]
+  },
+  "/expense_effects/otherwise": {
+    "source": "6c348269266a5f02981526b7668c782a75a6d087840156e11515d80f831727e4",
+    "result": "f9c24d0b6dc3d74110391f44475cb507e571d52f9d1b5091da168720ddb74c55",
+    "edits": [
+      [
+        0,
+        "超过上述数值后，每多投入10点",
+        "其他情况下"
+      ]
+    ]
+  },
+  "/expense_desc/expense_type22": {
+    "source": "6efa0e5fc05a648d492abcf6c5c491e42da191e40ecb930066644ecc7b983f8c",
+    "result": "72fc5ffc70394a97e3e24f83b882f415afb243d12873dc2077c4ba2c4361ea1d",
+    "edits": [
+      [
+        0,
+        "影响:|",
+        ""
+      ],
+      [
+        19,
+        "“",
+        ""
+      ],
+      [
+        24,
+        "”，“",
+        "、"
+      ],
+      [
+        31,
+        "”",
+        ""
+      ],
+      [
+        33,
+        "“",
+        ""
+      ],
+      [
+        36,
+        "”",
+        "三类"
+      ],
+      [
+        39,
+        "",
+        "中，每一项的投入都"
+      ],
+      [
+        41,
+        "高于对",
+        "超过"
+      ],
+      [
+        49,
+        "资的资金值",
+        "入。"
+      ]
+    ]
+  },
+  "/science_descs/tech59": {
+    "source": "810c6921f52072c15919c74a466f8935a33f11e34773d85764e37ff9402a7d30",
+    "result": "8f5eb794c7442f290fb2bd9746288baf0cdbf6aa85c4618ef9869e4b255cca82",
+    "edits": [
+      [
+        256,
+        "因此",
+        "这样一来"
+      ],
+      [
+        260,
+        "便",
+        "使"
+      ],
+      [
+        263,
+        "狂热的",
+        "坚决反对旧"
+      ],
+      [
+        268,
+        "解构大师",
+        "的人"
+      ],
+      [
+        276,
+        "简单重蹈着屠龙者终将成为恶龙的覆辙，热衷于作茧自缚，在新版",
+        "建立起了另一套"
+      ],
+      [
+        307,
+        "万神殿内",
+        "体系，并在"
+      ],
+      [
+        312,
+        "取其辱",
+        "己曾经批判的秩序中为自己保留了一席之地"
+      ],
+      [
+        332,
+        "||",
+        ""
+      ]
+    ]
+  },
+  "/buttons_names/button79": {
+    "source": "dda7a12c49f553453247f5b6dfc82b6c6d0a29e83e87e7b2834dc06414dc5f89",
+    "result": "26391bd99ba7888d87882b1a8c325b5da0f187a6c957e0df9e547ebc464bb4f1",
+    "edits": [
+      [
+        0,
+        "入侵该国",
+        "军事干预"
+      ]
+    ]
+  },
+  "/buttons_names/button95France1": {
+    "source": "0d847b5d2ebd91b87d662e85190e3584e82afba6db0fc91936b3785d4cb6232f",
+    "result": "bba91b3f3f830469f7cd09a095b07f379372dd659679e2a0a967efa94517950f",
+    "edits": [
+      [
+        2,
+        "对",
+        "抢占"
+      ],
+      [
+        4,
+        "商品倾销",
+        "国市场"
+      ]
+    ]
+  },
+  "/buttons_desc/button15var4": {
+    "source": "5c2efe337f7e203067600967116b7ee5fb6e9bd2060ec904877e3c2d5cec4894",
+    "result": "0c1198b7f0b5ce8dbe1b466381c94fe7c9dab4dfe810072ac3753555888a04e7",
+    "edits": [
+      [
+        0,
+        "当",
+        "该"
+      ],
+      [
+        2,
+        "盟友所提供",
+        "区内我方控制"
+      ],
+      [
+        8,
+        "助力",
+        "国家"
+      ]
+    ]
+  },
+  "/buttons_desc/button15var5": {
+    "source": "3db88dc193023d53f2b80bfccb1296a837cc0a3f5a0c76a628580f750b459b1b",
+    "result": "b6a9197f3ba0d1ed5494c647ddb9f9aeb36e50ebedb8c39f720fb06cf698fb2a",
+    "edits": [
+      [
+        0,
+        "当",
+        "该"
+      ],
+      [
+        2,
+        "对手",
+        "区内敌方控制"
+      ],
+      [
+        5,
+        "反制作用",
+        "国家"
+      ]
+    ]
+  },
+  "/buttons_desc/button43var3": {
+    "source": "41adb07af9b4fa2774134c3de45b538def4ac1ff781f97ae9af78f20bba2a139",
+    "result": "534e731033bfa98bb32418e12ad955025d0c91370ef5c0da251d2f08965e9264",
+    "edits": [
+      [
+        2,
+        "核",
+        ""
+      ],
+      [
+        4,
+        "的国家",
+        "器"
+      ],
+      [
+        8,
+        "获得",
+        "新增以"
+      ],
+      [
+        11,
+        "述修正",
+        "效果"
+      ]
+    ]
+  },
+  "/buttons_desc/button48": {
+    "source": "7b759b45fb13959892f6ccb6bd8e765cf58a016ad738178b2880711d6d49d210",
+    "result": "d3f59aedf9a18d1cce8c30b4df32062b2d1bbef3f44a7895e94d8a6e35ba62bf",
+    "edits": [
+      [
+        0,
+        "天主",
+        "该国基督"
+      ],
+      [
+        5,
+        "党与意大利",
+        "派和"
+      ],
+      [
+        13,
+        "对意大利",
+        ""
+      ],
+      [
+        18,
+        "统治",
+        "影响力"
+      ],
+      [
+        21,
+        "地动山摇",
+        "会削弱。"
+      ]
+    ]
+  },
+  "/buttons_desc/button179cond0": {
+    "source": "e504f6b1c8acad50127d9efe403d13c4970eb2276c2d0320134c1eb98b3741f5",
+    "result": "4fe487b2b616761af9896a76218b796eec503bb6ad647909441dd75741407476",
+    "edits": [
+      [
+        4,
+        "是",
+        "已并入"
+      ],
+      [
+        7,
+        "的一部分（要么作",
+        "，或"
+      ],
+      [
+        16,
+        "一个",
+        "其"
+      ],
+      [
+        24,
+        "要么被吞并）",
+        "或全部领土已归苏联。"
+      ]
+    ]
+  },
+  "/character_creation/attention_trait_needs_selection": {
+    "source": "e3b9a5aaec71d4dac9a47eb9582f9100e08ce47ac150bda95a5a87be563e9454",
+    "result": "e2d0a48775fc03c7f14c89fdd88544bf5159b07a2118c4a7887622e882c098ac",
+    "edits": [
+      [
+        9,
+        "",
+        "忠诚"
+      ],
+      [
+        11,
+        "以",
+        "再"
+      ]
+    ]
+  },
+  "/decision_desc/decision3var4": {
+    "source": "0d499483236f6a2be3d1a0cf3eb2f4e33545f3524747ad9b474ae3e388a60688",
+    "result": "ef9a3535c2f74b177967ddbd51ff8c439ed91a6b9472ae1fbc3578f0ae4465a0",
+    "edits": [
+      [
+        4,
+        "增加",
+        "变为原来的"
+      ]
+    ]
+  },
+  "/modif_desc/modif25var4": {
+    "source": "9a5088d5652c2fc90155ffda606d632ce0c3f6c2f066f7e94f842a59ac704a2c",
+    "result": "0a0a1679d87ed71ec81e2066825c25417b96301c0bb145a778a57e63fe7463fd",
+    "edits": [
+      [
+        3,
+        "学",
+        "研"
+      ],
+      [
+        6,
+        "",
+        "的"
+      ],
+      [
+        7,
+        "加",
+        "量变为原来的"
+      ]
+    ]
+  },
+  "/modif_desc/modif25var5": {
+    "source": "81253ccfa52807a6423c59c78978a04aaf7f0201e6ab1cd3f2add20e4dc52094",
+    "result": "36733d1763a05c325c09ecada758be9c53bf5e5ed7fa855503d49f8651f34d33",
+    "edits": [
+      [
+        0,
+        "军事",
+        "民用科研"
+      ],
+      [
+        4,
+        "",
+        "的"
+      ],
+      [
+        5,
+        "加",
+        "量变为原来的"
+      ]
+    ]
+  },
+  "/modif_desc/modif25var6": {
+    "source": "0b3beb4a0be1c37a441d5574b6729f23f769db77bfeb866e7fb11189824f8308",
+    "result": "480c6a8789e4676841f1fe605dea89559cd1568e353ad4575c406b0003450979",
+    "edits": [
+      [
+        3,
+        "学",
+        "研"
+      ],
+      [
+        6,
+        "",
+        "的"
+      ],
+      [
+        7,
+        "加",
+        "量变为原来的"
+      ]
+    ]
+  },
+  "/modif_desc/modif25var7": {
+    "source": "fab1002871567157a51f903bd537af64ddb26a9607b9563535cf71b702041c07",
+    "result": "a277b82132c9be41a2d3817ebfd0bfc18d6bf715e21abad61e6475a5da7bab43",
+    "edits": [
+      [
+        4,
+        "学",
+        "研"
+      ],
+      [
+        7,
+        "",
+        "的"
+      ],
+      [
+        8,
+        "加",
+        "量变为原来的"
+      ]
+    ]
+  },
+  "/modif_desc/modif35var1": {
+    "source": "ad15ea0731fb1e305e0500bd49f0cdfc62957f2e1f2b850de9c3517d5b51e963",
+    "result": "aea71b2e7dd820dfca973d858eda618dd288b84644793c227a17adcbabcab614",
+    "edits": [
+      [
+        0,
+        "降级",
+        "缓和局势"
+      ],
+      [
+        7,
+        "少2倍",
+        "半"
+      ],
+      [
+        11,
+        "但需要",
+        "须削减的"
+      ],
+      [
+        18,
+        "增加2",
+        "翻"
+      ]
+    ]
+  },
+  "/achievement_texts/desc89": {
+    "source": "1e1e61a857315a3e1e7269c294c1129cc4756d2ea1ca4c0d600e972374596a79",
+    "result": "4ccec689260d6b01d59441b304c97fe81223ffb898b8f936ec61c356db55a0a4",
+    "edits": [
+      [
+        0,
+        "实现",
+        "统一后的"
+      ],
+      [
+        3,
+        "",
+        "国包括"
+      ],
+      [
+        4,
+        "合并",
+        "地利"
+      ],
+      [
+        8,
+        "整合",
+        "控制"
+      ],
+      [
+        25,
+        "三地领土",
+        "。"
+      ]
+    ]
+  },
+  "/events/events5Result4var1": {
+    "source": "e9fe5547c2fc33c7c8477921956d52a82f119f2af30a6f091e905d4434667865",
+    "result": "46970ae14bf692c82c13ff8a978310b19b90e623653d0f6d87ac6b76c53dbcba",
+    "edits": [
+      [
+        27,
+        "它立即",
+        ""
+      ],
+      [
+        32,
+        "",
+        "很快就"
+      ],
+      [
+        36,
+        "呼",
+        "它"
+      ]
+    ]
+  },
+  "/events/events5Result5": {
+    "source": "45fb7a2688eed6dcac953e5d0734be4b2a6a721363e2e15f9cfb7a1de9036515",
+    "result": "0204d4ebfdf9b6f4de53caf9dd06ceb17686bddb2a8e0f3e7a760da35cc45ca5",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events5Result10": {
+    "source": "45c7dfb29ef946c79b9f73360e72cb714c670b69248d811f1d8a9d1d298f1e5e",
+    "result": "6eca7edb1c36746dcfd67630356e7fa859fbb7c731b903e111beb99bb2371f50",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events7Result1Var0": {
+    "source": "ae669889f1a717c443ae81f0ecd093d8939cbcfc372b866ce52f9c1f42a91293",
+    "result": "86c75822f4ba92406ab41e142de8a3bbe52b34f22b27f309994b51deb51c6224",
+    "edits": [
+      [
+        0,
+        "|",
+        ""
+      ]
+    ]
+  },
+  "/events/events12Result0": {
+    "source": "6ca5cf29a40616d0dfeacff2b06e56c285ea93caac415cf02a615102093c2c75",
+    "result": "e298decf13f5adee8c7b444d611e58b2f3175c7bd6be22b7dd2e2bd5ee065667",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events16Result0var0": {
+    "source": "ee3f5b3e70a46a712468386e65343a154a6b6cff8a6fe890557540d37d9dc344",
+    "result": "3c1e4c5165541de02a13cb60c161b72d41b307ee361a9416854dc3c5d4faa3a3",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events22Result1var1": {
+    "source": "11b33f7599449ac92a19f4e13cae79e9307fbcfadc02afd0f722954ebb54a77d",
+    "result": "334aa3ae0077a63e5e6537e0841d61f3383c51788df1973a56bc61834954e355",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events22Result0var2": {
+    "source": "b9faad605f97266b73c67aa7c4d6f9d33ea2b16058a56cc5f45a6814b2462f57",
+    "result": "3c51d3e0e4d5b60f58b99dcb8f9ce3a4e82cb8bbd34dba1f2b7a09f1a1f64f9d",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events22Result1var2": {
+    "source": "a1b654a63d0a977a3f8fc96c67a1f250684dcb7f944d6a17229809a224d5f975",
+    "result": "b0d2e29b673d13b2ec1adabf9c4a6bfcabad79540fc5ed4ccd665fa94d2327f4",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events23Result1var0": {
+    "source": "7c6bf65b99069a77056e2059ed6421217776af5514f158627f0110299966072e",
+    "result": "68b69f6235b38eb7080746e6a0620d8f54972835d88d125846a397aad52674b3",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events23Result1var1": {
+    "source": "935c6d93d287d36c1d079b8d822435c6191638b690f5741d28a7aa3687547102",
+    "result": "a28b8d03c0bbad1c66e038d937d52dc2e5eeafbf3278b4f13aeb16d4d631dfe5",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events23Result1var2": {
+    "source": "5e99cf77c7a82dfd400099397c4e54672d65ce468ab09217d6937dade8128df1",
+    "result": "73b27a3c96ff1ef7b5e48db64fe60c235bf29c604d83a3f0256add9f4f2f8453",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events25Result1var2": {
+    "source": "4c81823a66ae6ce20ab84009043e285fca7fdfec115dd84112d24d6ff5def910",
+    "result": "ed5459b2171dc27ed765f2375ea9dde2a64ed5c723ec7fad0de33e0aeeb80b58",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events47Result3": {
+    "source": "0c5dbaf4993ff0aab0351cf08b0e2fa28fc98670f7446c9370d48f424712cc89",
+    "result": "f570a1c679bb88570720b85d90d104524fcd089604d2f1cde7feda927dcad946",
+    "edits": [
+      [
+        39,
+        "",
+        "|@"
+      ]
+    ]
+  },
+  "/events/events85Desc": {
+    "source": "26976e59581d8511f480485980a8997908c08131845fdc93635d422b56d6915c",
+    "result": "396d2681af39487113a8a816188c2e830442eadfba47124ca5cefdeb5108a375",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events86Result1var0": {
+    "source": "681fe7b90334b33283befcad2d4cb8dea2184c7ba2982c7b8e7c58feac2d779a",
+    "result": "0a3f17e044f42e67b83b49895616d0e0bcb5d58172756920fd3b2cce3ce854c7",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events86Result1var1": {
+    "source": "a1a479f64f70cc79a718c8ebc14bdef0b1602fc951dd40be65c6cc3bf494e44e",
+    "result": "2c153ef7d24fe7a0fc50adc585ac28c4dfef8f656a98cc60cb07db79b620b416",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events414Result3": {
+    "source": "9444648e8bf73d490f786467b7c4aa691a7e66cd166be376e9b0b2b89a29390b",
+    "result": "a04fb1271056e1ef53bfe1d22dd93acb6e22ae18e3299d4f0d559062c6133301",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events416Title": {
+    "source": "80ba28e7b5262b82ed9023a7cc397bc0e69c19231bc739c695bfe566e1f506bc",
+    "result": "5b79be0dbe23a46aae1866e40e1938c04216e036ae75a2cd094bfe63e2d00bd8",
+    "edits": [
+      [
+        0,
+        "",
+        "政局和平变动|"
+      ],
+      [
+        3,
+        "的和平政局变化",
+        ""
+      ]
+    ]
+  },
+  "/events/events117Answer2": {
+    "source": "31fd9e5ad9f31d1d06e1ccd20d62f83a0079c7ffa3464fe5082baff3707516cd",
+    "result": "fb2258fa4568badbe1a9f654632f7cccc35c8cd9cd99b0765a64d400680492d9",
+    "edits": [
+      [
+        0,
+        "不同意见",
+        "发声"
+      ],
+      [
+        5,
+        "对党",
+        "他"
+      ],
+      [
+        8,
+        "爱护",
+        "权利"
+      ]
+    ]
+  },
+  "/events/events132Result0": {
+    "source": "e213e3cdf535d96f539aa511a82ed3245b55653fb3c3318f96896c7a4fc6dbee",
+    "result": "c404a08cc6de5d17709d5563adc6addd4d0c62e3410015a7437b01006caf8de9",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events132Result2": {
+    "source": "a755ac99e3cb4732c40a7e1e65c8fde91598ab48adaad63a345ee4210f1be933",
+    "result": "7ed4be0600786e830bf7da33fd0477a9c195b30fa4d72eba2de96ab1e3e1268b",
+    "edits": [
+      [
+        1,
+        "",
+        "反对派的抗议愈演愈烈，"
+      ],
+      [
+        4,
+        "在反对抗议运动大大升级后",
+        ""
+      ],
+      [
+        85,
+        "摊开",
+        "推行"
+      ],
+      [
+        148,
+        "接",
+        "忍"
+      ],
+      [
+        152,
+        "政策带来",
+        "引起"
+      ],
+      [
+        157,
+        "物价腾飞",
+        ""
+      ],
+      [
+        171,
+        "“福报”",
+        "物价涨幅"
+      ]
+    ]
+  },
+  "/events/events132Result3": {
+    "source": "d7f024447b5e058282d287808a0ff466a89ad5e554446a8d938ebd7f5b5963f0",
+    "result": "ab989453b83c1267b0fe2d3bf6fa2693f5908d03bb3ace400bfeaef5d299e2b7",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events132Result2Alt": {
+    "source": "88e6da4f1fd8d64b305852f712a01437e1fd34362237732a307dc702345a08f8",
+    "result": "d54763484e16a519f4be0d4150f04f0c16ff3e4310b25292d3947fb79445ec2d",
+    "edits": [
+      [
+        1,
+        "沃伊切赫·雅鲁泽尔斯基在",
+        ""
+      ],
+      [
+        15,
+        "",
+        "派的"
+      ],
+      [
+        17,
+        "运动大大升级后",
+        "愈演愈烈，波兰领导层"
+      ],
+      [
+        93,
+        "摊开",
+        "推行"
+      ],
+      [
+        156,
+        "接",
+        "忍"
+      ],
+      [
+        160,
+        "政策带来",
+        "引起"
+      ],
+      [
+        165,
+        "物价腾飞",
+        ""
+      ],
+      [
+        179,
+        "“福报”",
+        "物价涨幅"
+      ]
+    ]
+  },
+  "/events/events193AfganCivilWar_SecondSideWin_0": {
+    "source": "bbeb6680c364bd9de8b6fc8ace1b3de66fb432fb0b5a78ae6fb9b3e9d5490b3f",
+    "result": "3d8f63e09c2927cd3607b27b51fdc65822f0b655a6beab0d872cd138769d0577",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events193AfganCivilWar_SecondSideWin_1": {
+    "source": "e26b6ea050c84d10373e58c2eb9bbfa007ee3f925b50276f45f661deb96c9246",
+    "result": "701e351fde03ee81d7f7010888600fc067d3e75aa7fd9a9359de5b9f1e543c17",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events193YemeniteWar_SecondSideWin_0": {
+    "source": "0dce4a10509594f0f9dce51041dec499a35599b323139a85435c80f5456bf4c2",
+    "result": "c2338eeab83367fd41ebf1c60aab9bbdc8c486bdc7b100ffc248ecedcaca1e70",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events193YemeniteWar_SecondSideWin_2": {
+    "source": "0dce4a10509594f0f9dce51041dec499a35599b323139a85435c80f5456bf4c2",
+    "result": "c2338eeab83367fd41ebf1c60aab9bbdc8c486bdc7b100ffc248ecedcaca1e70",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events209Title": {
+    "source": "fdef81c3fa73ff0155a18cf376fbf5da600aa59344fbe28bcfb1c4c27b5815b9",
+    "result": "4a6bca2c9ac3dcbf37436385f942ea7c456f2cc2e7bf6d82904c6a8e89553b53",
+    "edits": [
+      [
+        0,
+        "选择继任者",
+        "“接班人”行动"
+      ]
+    ]
+  },
+  "/events/events221Desc": {
+    "source": "781e5d121c05aac6390c0e75bea2a919a640acb4008c2fb399620e2539c1dbf1",
+    "result": "1525c62ba1176478d3f7fea3effc71ecab9c534404ae0cff848f98ff3e0c54b7",
+    "edits": [
+      [
+        326,
+        "亲",
+        ""
+      ],
+      [
+        329,
+        "主义",
+        "派"
+      ],
+      [
+        334,
+        "自由战士",
+        "阿扎德甘"
+      ]
+    ]
+  },
+  "/events/events221Answer3": {
+    "source": "80cd4a826c5e6a951d5825845876b784a472afb399bbf68c3e579c6a7690d38c",
+    "result": "6963b098852e76cf3ed0600ff59a421fdb526b8ddb13fb66c306841356b5cbd5",
+    "edits": [
+      [
+        2,
+        "自由战士",
+        "阿扎德甘组织"
+      ]
+    ]
+  },
+  "/events/events246Adds1": {
+    "source": "8c50b64a6d3e7149b5c7cddd9e7985c4e167ac4a3d4604f7d577af046b4021c0",
+    "result": "19cf3a9f86524d74bdb42c74de0d7e516bd090b1f81bd68fef82e931dafb843c",
+    "edits": [
+      [
+        9,
+        "获得",
+        "追加每月"
+      ],
+      [
+        14,
+        "每回合-15",
+        ""
+      ],
+      [
+        24,
+        "",
+        " −15。"
+      ]
+    ]
+  },
+  "/events/events368Desc": {
+    "source": "646be971c1eb0b80d9bd0b44da0d86c03974ab86f85206b790298b94eb3e85f3",
+    "result": "32782881f81c6c25cdae63d513bb471ec2df8d7786b0ac559a1599bf572ba1b2",
+    "edits": [
+      [
+        365,
+        "",
+        "@这项决定在丹麦国内引发抗议。数千名市民走上哥本哈根街头，指责政府背叛国家利益。|"
+      ]
+    ]
+  },
+  "/events/events371Result1": {
+    "source": "d7f9c12c548036d902e9d61203fea45aa86045395a06d89d4e87fbfaa061b67f",
+    "result": "547511f4beeec6118b5ba529cedbfe5f52a9910db1c89853d90deacd02133a0a",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events373Result0": {
+    "source": "7cbe6b696ff6421c9e1f70d8e4b11c7e583a0d345d749fa35f07465f8c2dc15c",
+    "result": "588652b822c17aaad9f021e17e33a76ca3673144ba51b8819bd7b0191bbc0b92",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events373Result1": {
+    "source": "4ec4c7e0a28c844e280c651d4653f5b62fec13d3a7bbb567d4e9e1e7ad1dce45",
+    "result": "34047d35890614f71e9e920eacf4e8a599d6af2c70cab0b73b2851f41f42ac81",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events377Answer2": {
+    "source": "b441b6f9da68f689969fc8af547eadca83a0bf8716da2b70eed140eaae1bac1c",
+    "result": "7bbdacc13c9e242f0c84b41dc0a0088e0b699493ba8299c3218ce97b2907b94f",
+    "edits": [
+      [
+        6,
+        "狮子大开口",
+        "要求尽可能多的赔款"
+      ]
+    ]
+  },
+  "/events/events377Result2": {
+    "source": "15d3cf106e1e629813285cd3c6ac977fdcecdf49ccd42b515ac07b600c2a1a58",
+    "result": "a54c89209c2fd2d794a20aab628d3670d003363f573a093dd7c8e71ff421735c",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events383Result0": {
+    "source": "75ee5445babe855079a9a4decf43de038fef08af97419a037e08adaeb897c7cc",
+    "result": "69739f3200c6a8562076ab9a47e58ad83666bbaeaa2faff749f09c0fbda7f66c",
+    "edits": [
+      [
+        302,
+        " ",
+        ""
+      ],
+      [
+        366,
+        "|",
+        ""
+      ]
+    ]
+  },
+  "/events/events383Result1": {
+    "source": "d7d001bfc5375d931eceb24a5a80ae24fe2a709c6ddc1bd5a9d95d43d87849ae",
+    "result": "47be4e11c23abeabbd02418760949e19581057a35dcd01b7c0ea18a943e79023",
+    "edits": [
+      [
+        415,
+        "|",
+        ""
+      ]
+    ]
+  },
+  "/events/events386Result0": {
+    "source": "ab077a323cfe55b6a6887ebf737ad518e752cbdbfa4821e5d4898146f1bda340",
+    "result": "d871b99946908d727697cd64f8e109b6291272978fd3c9a11220ab5183bfa2b7",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events410Desc2Government": {
+    "source": "59b924c65311397bd1d4255fa6365194cc54a119914b759b4537361d57b86a39",
+    "result": "04b218638f34d9eeeeceecfe66ce544bef271c2b666134a81f2f430e834d7345",
+    "edits": [
+      [
+        188,
+        "|",
+        ""
+      ]
+    ]
+  },
+  "/events/events410Desc2Interveners": {
+    "source": "4a1b5938310c8ebf32a19690cb3051727318223236a470ab7a92817def3cfde1",
+    "result": "9f594f6dce4207dfbc4628d1e3f8037033db0ea1f0e455ada626ad8ac3f13679",
+    "edits": [
+      [
+        188,
+        "|",
+        ""
+      ]
+    ]
+  },
+  "/events/events410Desc2Neutral": {
+    "source": "c60cca024bf84e7d34f0cbbd404e2b9b77af4727703acbe54573698c485d3a11",
+    "result": "ee2913c070161ef87c7feafc17b5657ff6950332276fd311876216f60d178822",
+    "edits": [
+      [
+        449,
+        "。",
+        ""
+      ]
+    ]
+  },
+  "/events/events454Result0": {
+    "source": "6f5379816c5883d5df8280ff51bf7722a0de575e7ed2a8d8a701a0948b76855d",
+    "result": "b25c2e80755db79cd71bf4c0a6d85cf1c10e51f56befb8d0fe64bd54ade5696d",
+    "edits": [
+      [
+        179,
+        "驻地",
+        "情报站"
+      ]
+    ]
+  },
+  "/events/events422Answer3": {
+    "source": "cc97d3e22ccb4ca59cafd722c80eb716592e4ab4802da30f22c316c955f98bf2",
+    "result": "654d1c86ae5947f2426517786d33c42347048864ad48a913a3ea1210cbf16ac1",
+    "edits": [
+      [
+        0,
+        "推迟决定",
+        "再给马德里一点时间"
+      ]
+    ]
+  },
+  "/events/events426Result3var0": {
+    "source": "1bcdc133d6c4fc7c8eb77094f05ea41a0d3129cc0d6ce15c580018b1095cd645",
+    "result": "e2df874c153c05aa4faad6d87d6c2b012677c8e6a456e5f6170bf384d03c5924",
+    "edits": [
+      [
+        0,
+        "|",
+        ""
+      ]
+    ]
+  },
+  "/events/events426Result3var1": {
+    "source": "753d7104191858585616d606179bf3b8156b963f8601e27cf9a361b9d082cfe7",
+    "result": "9ffff277854abb1f8346a1e153110ab9a0e27dafb29f5b265ff1ac6f843c9c89",
+    "edits": [
+      [
+        0,
+        "|",
+        ""
+      ]
+    ]
+  },
+  "/events/events429Desc": {
+    "source": "ab15747c2b1cb30f9f9bf8fcfb1966daffefca308a29461c85511b86448c4fff",
+    "result": "26eacd25872a1feaaf039216814e3c2e6c2524c0abd23085b64ae808a58eaecf",
+    "edits": [
+      [
+        28,
+        "",
+        "驻"
+      ],
+      [
+        31,
+        "电台",
+        "情"
+      ],
+      [
+        34,
+        "道",
+        "站报告"
+      ],
+      [
+        567,
+        "数",
+        ""
+      ],
+      [
+        569,
+        "",
+        "来"
+      ],
+      [
+        571,
+        "型",
+        ""
+      ],
+      [
+        629,
+        "电台",
+        "情报站"
+      ]
+    ]
+  },
+  "/events/events429Answer1": {
+    "source": "1c244f2636eb793b98d37085c855c7c425476724040f280405260fb2372acea8",
+    "result": "892a826fbe5ef6336501893507632a882d795638dd51df954d76f9f934739734",
+    "edits": [
+      [
+        0,
+        "将右翼分子纳",
+        "招募他们作"
+      ],
+      [
+        7,
+        "特洛伊木马",
+        "施加影响的代理人"
+      ]
+    ]
+  },
+  "/events/events430EastChina": {
+    "source": "024f654a8ce48af7598c878cdb2a122b102ff68046988dd2bcf748c944bd1981",
+    "result": "0941d0c52bd769b43508d890f911c5d4628706e51c5e95ec9bc0242adf8735a8",
+    "edits": [
+      [
+        7,
+        "",
+        "的一个"
+      ],
+      [
+        9,
+        "队",
+        "连"
+      ]
+    ]
+  },
+  "/events/events433Result3var1": {
+    "source": "5356ae841361c24d340cc7250a33dfee37803fde6ff1c197dcb187c4e50a567d",
+    "result": "206d37b12c53b62c210d1d6a3ab117372c0b6ed49b886cc9a05373d00273761f",
+    "edits": [
+      [
+        91,
+        "",
+        "|@"
+      ]
+    ]
+  },
+  "/events/events438Result9": {
+    "source": "b48b516e5e08fcc4d4316318d1184c111b2aeee9b0579729f72f777f650bbdc5",
+    "result": "107bebeb69b44c4f5aee3eb698ad36596b479a210550b029068ff1d07500ffea",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events439Result3": {
+    "source": "70e28d760f982b4529bd914645e511981c536754b34d4b67962d4efa691aec33",
+    "result": "85010bcc8fe2a165ec8f49b9f6bc4e3823146e60173b636b997c918900ab89a5",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events440Desc": {
+    "source": "2d6074a247daca0674359def79099a57d0625fa9016331a5e43eae962d3cc17f",
+    "result": "5132ee42e98aa546e880467b7e672f7ee9ca08115b6420ace210f8bbb8ae63b1",
+    "edits": [
+      [
+        205,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events442Result2var0": {
+    "source": "50c5004051560a0411d0c6c195334788ce9a00cf81b8d0c015b2f5f631125419",
+    "result": "537c71f63904fe7c329a4172acae81c0c6db50037207c0815384b5c116829c24",
+    "edits": [
+      [
+        1,
+        "驻地",
+        "情报站"
+      ]
+    ]
+  },
+  "/events/events459Answer3": {
+    "source": "6bee512fa506d6445fced17454aaadebd3ac284e3453bf3e9bdd7369ca53efa9",
+    "result": "19f2ade95da7603906d557d7bf31b98bbcf80e9f771983741c9b56aaeee464b7",
+    "edits": [
+      [
+        0,
+        "保持当前局势",
+        "让这个职位暂时空缺"
+      ]
+    ]
+  },
+  "/events/events469Result1": {
+    "source": "ac29a8877a98fd96744e075b7cc6f575d0742a4d2fa49a7c650b97e7eff4827b",
+    "result": "ab00f696632f9b16d7f2f3d7021d0fff376632d1fb60e364a9b1c4efba23f88a",
+    "edits": [
+      [
+        89,
+        "｜",
+        "|"
+      ]
+    ]
+  },
+  "/events/events475Result2var1": {
+    "source": "b42b67f4ba3bb5d2e2c276fc81827b3213513c12520d73adac475e20f1e024ce",
+    "result": "027eac9571711c54a1f14e891a2fce9b2e4c24ad0ae37bcd0bca272b6efca321",
+    "edits": [
+      [
+        169,
+        "｜",
+        "|"
+      ]
+    ]
+  },
+  "/events/events476Result2": {
+    "source": "e687a4faa8ce49a5d4ce8280aa5b47095f414a49054423b1f9cf0763a9031e66",
+    "result": "df9c13ac48cc68f8eea27890f02db328a96480b2d4a162fbb19e6d2a9d1d054d",
+    "edits": [
+      [
+        120,
+        "｜",
+        "|"
+      ]
+    ]
+  },
+  "/events/events477Result3": {
+    "source": "aae356d154880a33365ec45868f179b9e2350fb42235fe708bbd0d78aad1ebc4",
+    "result": "6a3c022b1e406cd3a6992191cb87fd3461c0b3a83de01e2207fd12619244a099",
+    "edits": [
+      [
+        0,
+        "",
+        "@"
+      ]
+    ]
+  },
+  "/events/events377Result1var1": {
+    "source": "23d3ba0e61a813abf9dbe2e12f73cdc18b685e026210c0134238c2036584c71a",
+    "result": "3d5d9803ba3f9441dac900b712e31e4438cffe2d1d97f43a74dcd6c7e28abef1",
+    "edits": [
+      [
+        81,
+        "。",
+        ""
+      ]
+    ]
+  },
+  "/modtool/modtoolNoteRegionToCountry": {
+    "source": "e635ce338f5722924a5046b7427eae0a0fb040e6c32f169ab78407a9b5c49a2a",
+    "result": "365fadec5fb351df5fdf740fd5ad4255210dfe44ca2199f531942c2a365d29b2",
+    "edits": [
+      [
+        6,
+        "存在",
+        "出现"
+      ],
+      [
+        13,
+        "则会与该",
+        "添加此"
+      ],
+      [
+        19,
+        "一起",
+        "时该国也会"
+      ]
+    ]
+  },
+  "/modtool/modtoolTraitNeedsPost": {
+    "source": "274f83be7e263355bb69d41d64798d90f6afe7d5b0aeaeac23d6e947b31193da",
+    "result": "9fe573e3f7d814d2751076b2ccfe347b3eef3e10c04a148cc928ac7841492451",
+    "edits": [
+      [
+        3,
+        "只",
+        "仅"
+      ],
+      [
+        5,
+        "在岗时",
+        "任职期间"
+      ],
+      [
+        12,
+        "",
+        "请"
+      ],
+      [
+        14,
+        "边",
+        "侧"
+      ],
+      [
+        16,
+        "",
+        "择"
+      ],
+      [
+        18,
+        "",
+        "职位。"
+      ]
+    ]
+  },
+  "/ruler_polls/change": {
+    "source": "013b2d1f184a3f96fd9a0f0ef19804bcdd92c123870486e97560dc069ddca1a7",
+    "result": "f7c8a36344c18865dabfea20b209293b989c4ebca4e4ade5cd20d4ea723cc0cb",
+    "edits": [
+      [
+        0,
+        "@",
+        ""
+      ],
+      [
+        4,
+        "节",
+        "测量"
+      ]
+    ]
+  },
+  "/nuclear_outro/shelter_Tagansky_saved": {
+    "source": "b2d28b1ba8722b8cd7d11e264146bb0f05ad7448e4681ee0fc02a01b3316702e",
+    "result": "c6c1db9b48efcd17591ddaa3d2cce105ca550ae8558bff0ce9ef4e47a11c6043",
+    "edits": [
+      [
+        0,
+        "核战",
+        ""
+      ],
+      [
+        5,
+        "幸存",
+        "仍保持联络"
+      ]
+    ]
+  },
+  "/nuclear_outro/shelter_Sharapovo_saved": {
+    "source": "85791c135147e1d2bbb7c53b2444c6b41dbc2cc113ef80f4106fc53b8c4fabd3",
+    "result": "8cc717a5b5c1132b74a904ee3a702d4d1840845370e44642ebd5f2f22745fcc4",
+    "edits": [
+      [
+        5,
+        "幸存",
+        "仍保持联络"
+      ]
+    ]
+  },
+  "/nuclear_outro/shelter_Metro2_name": {
+    "source": "19d709a5a976aa122eebeccda47e446042ec7fd353189e40e863d3126e9a98bf",
+    "result": "89afc97235763ef9002e00bd4844d7a61b6ba04ea70e580112e9c35330a604ef",
+    "edits": [
+      [
+        0,
+        "莫斯科",
+        ""
+      ],
+      [
+        4,
+        "",
+        "下"
+      ],
+      [
+        5,
+        "",
+        "道"
+      ],
+      [
+        6,
+        "线",
+        "号系统"
+      ],
+      [
+        8,
+        "代号",
+        ""
+      ]
+    ]
+  },
+  "/nuclear_outro/shelter_Metro2_fx0": {
+    "source": "dad70408d1ac886aecb1ba32b09fda783d9f25b433a03895620b33b9deb7d265",
+    "result": "3ef00921745d8e94dae3be57e0281ababb9057464101fe76d7a127f7a0e04966",
+    "edits": [
+      [
+        2,
+        "极深",
+        "很大"
+      ],
+      [
+        5,
+        "无额外",
+        "缺乏确切"
+      ]
+    ]
+  },
+  "/nuclear_outro/shelter_Metro2_fx1": {
+    "source": "83fa582f5903bbb0a055f9495e2c569b094322065a1677e312248fac739aaa43",
+    "result": "fbe357908be8e84d2e55cfe75017e13ca48f988ff7535a13a9bd66b032104a5a",
+    "edits": [
+      [
+        0,
+        "入口处的防爆门，均由",
+        "据"
+      ],
+      [
+        16,
+        "算",
+        "计，各入口设有防爆门"
+      ]
+    ]
+  },
+  "/nuclear_outro/shelter_Metro2_saved": {
+    "source": "0e9f06af1a4fc5da21fe525acc170453db8c0669f1d4a53a714f948db7d2c6cc",
+    "result": "1de0ecc92379666e933a97d54931e323ce8d02bf25b1f99789e1832d3c7b3892",
+    "edits": [
+      [
+        5,
+        "幸存",
+        "仍保持联络"
+      ]
+    ]
+  },
+  "/nuclear_outro/shelter_Kosvinsky_saved": {
+    "source": "f03a4a6d008a0710304422b8d532486d624b1ce7ce08bb3ad019f8259073d5e7",
+    "result": "99f4491b64698f9e319d47e9897a7482b5e2e893b23b985f746c560129b5a879",
+    "edits": [
+      [
+        2,
+        "导弹部队",
+        "火箭军"
+      ],
+      [
+        8,
+        "役部队幸存",
+        "指挥所仍保持联络"
+      ]
+    ]
+  },
+  "/nuclear_outro/shelter_Zvezda_saved": {
+    "source": "85d96c9c68f9a6ac014c6e145c0e991f33752bf0c063807e7f91c98512a9d1c6",
+    "result": "bd241b4abf1be2803a7f7f918a49b2f685dde3bd4472a79ae22fe6b95984cca4",
+    "edits": [
+      [
+        9,
+        "本",
+        "地"
+      ]
+    ]
+  }
+}

@@ -23,6 +23,7 @@ import font_patch
 import game_paths
 import display_layout
 import runtime_ui
+import controller_text
 
 MOD = "zhcn-coldwar-local"
 ORIGINAL_ID = "114514"
@@ -66,11 +67,12 @@ V123_OUTPUT = {
 }
 LEGACY_XML = "35d22fb940414f1b27c14734684f030c93d9b1b4f60a4bf344d82699586c8a5e"
 PLANETARIUM_XML = "26920b91549bf9d8f025c7da05a26c6d6a7d8a118b886d9c306c55df9ed2cda1"
-RELEASE_XML = "18648adc8d6f4c405a8320cc89efe78bad3f1e702dafadcef830462d50bcf820"
+V125_XML = "18648adc8d6f4c405a8320cc89efe78bad3f1e702dafadcef830462d50bcf820"
+RELEASE_XML = "527f148b428758c0de0f6e4218e998d1971488cb41c20eb88508c4352c59c37f"
 ECONOMY_XML = "bcd572c7a596ff388840336d6cadc59e8afff44bb970b70acb77cd7925919dce"
 GENERATIONS = (V1_XML, V1_2_XML, V122_OUTPUT[LEGACY_BUILD], V123_OUTPUT[LEGACY_BUILD], LEGACY_XML,
                V122_OUTPUT[PLANETARIUM_BUILD], V123_OUTPUT[PLANETARIUM_BUILD], PLANETARIUM_XML,
-               V122_OUTPUT[ECONOMY_BUILD], V123_OUTPUT[ECONOMY_BUILD], ECONOMY_XML, RELEASE_XML)
+               V122_OUTPUT[ECONOMY_BUILD], V123_OUTPUT[ECONOMY_BUILD], ECONOMY_XML, V125_XML, RELEASE_XML)
 OUTPUT_XML = {BUILD: RELEASE_XML, ECONOMY_BUILD: ECONOMY_XML, PLANETARIUM_BUILD: PLANETARIUM_XML, LEGACY_BUILD: LEGACY_XML}
 HOTFIX_REMOVED = {"/system/save_resolution_question", "/ui/apply"}
 REGKEY = r"Software\Nostalgames\CrisisInTheKremlin2"
@@ -229,7 +231,9 @@ def render_text(xml, build=LEGACY_BUILD, english=None):
     if current in GENERATIONS:
         ensure(GENERATIONS.index(current) < GENERATIONS.index(expected),
                "这是较新游戏构建的汉化；切回旧版游戏时，请先还原汉化，再安装对应版本。")
-    if current in (V122_OUTPUT.get(build), V123_OUTPUT.get(build)):
+    if build == BUILD and current == V125_XML:
+        result = xml
+    elif current in (V122_OUTPUT.get(build), V123_OUTPUT.get(build)):
         result = xml
     elif build == LEGACY_BUILD:
         result = legacy_text(xml)
@@ -258,9 +262,29 @@ def render_text(xml, build=LEGACY_BUILD, english=None):
                 latest[key] = "|".join(original_notes)
             updates.update(latest)
         result = merge_language(english, source, updates)
-    result = release_edits(result)
+    if current != V125_XML:
+        result = release_edits(result)
+    if build == BUILD:
+        result = review_current(result, english)
     ensure(sha(result) == expected, "生成的本版中文指纹不符。")
     return result
+
+
+ENCYCLOPEDIA = {"positions_wiki", "char_wiki_links", "decision_wiki_links", "doctrine_wiki_links"}
+
+
+def review_current(xml, english):
+    ensure(english is not None, "缺少当前构建的英文语言资源。")
+    root = ET.fromstring(xml)
+    nodes = leaf_nodes(root)
+    for key, change in read_json(HERE / "proofread-1.2.6.json").items():
+        nodes[key].text = proofread(nodes[key].text, change)
+    # A missing Chinese article should not remove the game's own reference button.
+    for key, source in leaf_nodes(ET.fromstring(english)).items():
+        if key.split("/")[1] in ENCYCLOPEDIA and not nodes[key].text and source.text:
+            ensure(source.text.startswith(("https://", "http://")), f"百科来源格式无效：{key}")
+            nodes[key].text = source.text
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
 
 def render(base, build=LEGACY_BUILD, english=None):
     info = read_json(base / "info.json")
@@ -434,6 +458,7 @@ def run(args):
             runtime_ui.manage(args.game_dir, root, build, "install")
         check_font_build(asset, build)
         if args.action in ("install","restore"):
+            controller_text.manage(args.game_dir, build, "preflight")
             font_patch.manage(asset, root, "preflight")
             display_layout.manage(args.game_dir, build, "preflight")
             if args.action == "restore":
@@ -445,6 +470,7 @@ def run(args):
             if folder.exists():
                 verify_generation(folder, state["files"])
             runtime_ui.manage(args.game_dir, root, build, "restore")
+            controller_text.manage(args.game_dir, build, "restore")
             display_layout.manage(args.game_dir, build, "restore")
             font_patch.manage(asset, root, "restore")
             write_pref(restore_pref(state))
@@ -463,6 +489,7 @@ def run(args):
             verify_files(folder, state["files"])
             font_patch.manage(asset, root, "verify")
             display_layout.manage(args.game_dir, build, "verify")
+            controller_text.manage(args.game_dir, build, "verify")
             runtime_ui.manage(args.game_dir, root, build, "verify")
             _, active = read_pref()
             ensure(any(x["id"] == MOD and x["isLoaded"] for x in active), "本地校订模组未启用。")
@@ -514,6 +541,7 @@ def run(args):
         verify_files(folder, hashes)
         font_patch.manage(asset, root, "install")
         display_layout.manage(args.game_dir, build, "install")
+        controller_text.manage(args.game_dir, build, "install")
         runtime_ui.manage(args.game_dir, root, build, "verify")
         if state.get("pending_activation"):
             find_conflicting(base, mods, rows)

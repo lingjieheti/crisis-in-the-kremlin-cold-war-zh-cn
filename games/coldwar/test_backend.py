@@ -221,7 +221,10 @@ class RealUpgradeTests(unittest.TestCase):
         self.assertEqual(patch.sha(old_font), previous.font_patch.ASSET_SHA)
         with tempfile.TemporaryDirectory() as name, ExitStack() as mocks:
             sandbox = Path(name)
-            profile = sandbox / "player"
+            # Some released installers locate LocalLow from USERPROFILE and
+            # predate --data-dir. Both APIs must resolve inside the same fixture.
+            mocks.enter_context(mock.dict(os.environ, {"USERPROFILE": str(sandbox)}))
+            profile = sandbox / "AppData/LocalLow/Nostalgames/CrisisInTheKremlin2"
             game_copy = sandbox / "game"
             asset = game_copy / font_patch.FILE
             asset.parent.mkdir(parents=True)
